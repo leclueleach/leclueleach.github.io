@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Logistics Analytics — Demo</title>
+  <meta name="description" content="Supabase + Chart.js logistics analytics demo (income, expenses, profit, clients, vehicles).">
+  <style>
+    :root{
+      --bg:#0b0f14; --card:#111827; --ink:#e5e7eb; --ink-dim:#94a3b8;
+      --border:#232a36; --brand:#60a5fa; --radius:16px;
+    }
+    *{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    a{color:var(--brand);text-decoration:none} a:hover{text-decoration:underline}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px 18px 40px}
+    .header{display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .title{font-weight:700;font-size:clamp(18px,3vw,22px)}
+    .grid{display:grid;gap:16px}
+    .grid.kpi{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:18px 0}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+    .kpi .card h3{margin:0 0 4px;font-size:14px;color:var(--ink-dim);font-weight:600}
+    .kpi .card .value{font-size:26px;font-weight:700}
+    .charts{grid-template-columns:1fr;gap:18px}
+    @media (min-width:1000px){ .charts{grid-template-columns:1fr 1fr} }
+    canvas{width:100%;height:360px}
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid var(--border);padding:8px;text-align:left}
+    th{color:var(--ink-dim);font-weight:600}
+    .footer{margin-top:22px;color:var(--ink-dim);font-size:13px}
+    .config{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+    .config input{background:#0e1520;border:1px solid var(--border);border-radius:10px;color:var(--ink);padding:8px 10px;min-width:260px}
+    .config button{background:var(--brand);border:0;color:#000;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
+    .muted{color:var(--ink-dim);font-size:13px}
+  </style>
+  <!-- Supabase client (ESM) -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="header">
+      <div class="title">🚚 Logistics Analytics — Supabase Demo</div>
+      <div class="muted">Public read-only demo</div>
+    </header>
+
+    <section class="card">
+      <div class="muted">Add your Supabase credentials then click <b>Connect</b>.</div>
+      <div class="config">
+        <input id="url" placeholder="Supabase URL (https://project.supabase.co)" />
+        <input id="key" placeholder="Supabase anon public key" />
+        <button id="connectBtn">Connect</button>
+      </div>
+    </section>
+
+    <section class="grid kpi">
+      <div class="card"><h3>Income (this month)</h3><div class="value" id="kpiIncome">—</div></div>
+      <div class="card"><h3>Expenses (this month)</h3><div class="value" id="kpiExpense">—</div></div>
+      <div class="card"><h3>Profit (this month)</h3><div class="value" id="kpiProfit">—</div></div>
+      <div class="card"><h3>Deliveries (this month)</h3><div class="value" id="kpiDeliveries">—</div></div>
+    </section>
+
+    <section class="grid charts">
+      <div class="card">
+        <h3 style="margin:0 0 8px">Income vs Expenses vs Profit (Monthly)</h3>
+        <canvas id="lineIEP"></canvas>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 8px">Top Clients by Profit</h3>
+        <canvas id="barClients"></canvas>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h3 style="margin:0 0 8px">Vehicle Cost Efficiency</h3>
+      <div class="muted">ZAR per km derived from vehicle-tagged expenses and trip distance.</div>
+      <div style="overflow:auto;margin-top:8px">
+        <table id="vehTable">
+          <thead><tr><th>Reg No</th><th>Total km</th><th>Vehicle cost (ZAR)</th><th>ZAR per km</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Demo uses views: <code>v_profit_monthly</code>, <code>v_client_profitability</code>, <code>v_cost_per_km</code>. |
+      Built with Supabase + Chart.js.
+    </footer>
+  </div>
+
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+  let supabase = null;
+  let lineChart = null;
+  let barChart = null;
+
+  const fmtZAR = (n) => n == null ? "—" : new Intl.NumberFormat('en-ZA',{style:'currency',currency:'ZAR',maximumFractionDigits:0}).format(Number(n));
+  const monthKey = (d) => (new Date(d)).toISOString().slice(0,7); // YYYY-MM
+  const startOfMonth = (dt) => new Date(dt.getFullYear(), dt.getMonth(), 1).toISOString();
+
+  function setKPI(id, value){ document.getElementById(id).textContent = value; }
+
+  async function fetchViews(){
+    const [profitRes, clientRes, vehRes] = await Promise.all([
+      supabase.from('v_profit_monthly').select('*').order('month'),
+      supabase.from('v_client_profitability').select('*').order('profit_zar', { ascending:false }).limit(10),
+      supabase.from('v_cost_per_km').select('*').order('zar_per_km', { ascending:true })
+    ]);
+    if(profitRes.error) throw profitRes.error;
+    if(clientRes.error) throw clientRes.error;
+    if(vehRes.error) throw vehRes.error;
+    return { profit: profitRes.data, clients: clientRes.data, vehicles: vehRes.data };
+  }
+
+  function renderCharts({profit, clients}){
+    // Line: income, expenses, profit over time
+    const labels = profit.map(r => new Date(r.month).toISOString().slice(0,7));
+    const income = profit.map(r => Number(r.income_zar || 0));
+    const expenses = profit.map(r => Number(r.expense_zar || 0));
+    const prof = profit.map(r => Number((r.income_zar||0) - (r.expense_zar||0)));
+
+    const lineCtx = document.getElementById('lineIEP').getContext('2d');
+    if(lineChart) lineChart.destroy();
+    lineChart = new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Income', data: income },
+          { label: 'Expenses', data: expenses },
+          { label: 'Profit', data: prof }
+        ]
+      },
+      options: { responsive:true, interaction:{ mode:'index', intersect:false }, scales:{ y:{ beginAtZero:true } } }
+    });
+
+    // Bar: top clients by profit
+    const barCtx = document.getElementById('barClients').getContext('2d');
+    if(barChart) barChart.destroy();
+    barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: clients.map(r => r.client_name),
+        datasets: [{ label:'Profit (ZAR)', data: clients.map(r => Number(r.profit_zar || 0)) }]
+      },
+      options: { responsive:true, scales:{ y:{ beginAtZero:true } } }
+    });
+  }
+
+  function renderVehicleTable(vehicles){
+    const tbody = document.querySelector('#vehTable tbody');
+    tbody.innerHTML = '';
+    vehicles.forEach(v => {
+      const tr = document.createElement('tr');
+      const cells = [
+        v.reg_no,
+        v.km ?? '—',
+        v.vehicle_cost_zar ?? '—',
+        v.zar_per_km ?? '—'
+      ];
+      cells.forEach(c => {
+        const td = document.createElement('td');
+        td.textContent = c;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  function computeKPIs(profitView, deliveriesCount){
+    const now = new Date();
+    const thisMonthKey = now.toISOString().slice(0,7);
+    const row = profitView.find(r => monthKey(r.month) === thisMonthKey);
+    const income = row ? Number(row.income_zar||0) : 0;
+    const expense = row ? Number(row.expense_zar||0) : 0;
+    setKPI('kpiIncome', fmtZAR(income));
+    setKPI('kpiExpense', fmtZAR(expense));
+    setKPI('kpiProfit', fmtZAR(income - expense));
+    setKPI('kpiDeliveries', deliveriesCount ?? '—');
+  }
+
+  async function connect(url, key){
+    supabase = createClient(url, key);
+
+    // Warm up: count delivered shipments this month
+    const firstDay = startOfMonth(new Date());
+    const delivered = await supabase
+      .from('shipments')
+      .select('id', { count:'exact', head:true })
+      .gte('delivered_at', firstDay)
+      .eq('status','delivered');
+    const deliveriesCount = delivered.count ?? 0;
+
+    const { profit, clients, vehicles } = await fetchViews();
+    renderCharts({profit, clients});
+    renderVehicleTable(vehicles);
+    computeKPIs(profit, deliveriesCount);
+  }
+
+  document.getElementById('connectBtn').addEventListener('click', async () => {
+    const url = document.getElementById('url').value.trim();
+    const key = document.getElementById('key').value.trim();
+    if(!url || !key){ alert('Please enter your Supabase URL and anon key.'); return; }
+    try{
+      await connect(url, key);
+    }catch(err){
+      console.error(err);
+      alert('Connection/query error. Open the console for details.');
+    }
+  });
+</script>
+
+</body>
+</html>
