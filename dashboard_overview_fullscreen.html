@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Logistics — Overview (Fullscreen)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{ --bg:#062b2f; --panel:#0a3740; --ink:#daf9f6; --ink-d:#9bd0c9; --accent:#27f3d2; --accent2:#55ffa6; --border:#0f4952; --radius:18px; }
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+body{overflow:hidden}
+.header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px}
+.brand{font-weight:800;letter-spacing:.2px}
+.badge{font-size:12px;background:#b7ffdf;color:#023b2c;border-radius:999px;padding:6px 10px}
+.err{background:#ffd6d6;color:#3f0000}
+.main{height:calc(100vh - 52px); padding:10px 16px;}
+.grid{display:grid;grid-template-columns:1.1fr 1fr 0.9fr;grid-template-rows:0.9fr 1.2fr 1fr;gap:12px;height:100%;}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.04),transparent), var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:12px;overflow:hidden}
+h3{margin:0 0 6px;font-size:14px;color:var(--ink-d);font-weight:600}
+.value{font-weight:800;font-size:22px}
+.kpis{grid-column:1 / span 3; display:grid; grid-template-columns:repeat(5,1fr); gap:12px; height:100%}
+.kpi{display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.kpi .label{color:var(--ink-d);font-size:12px;margin-bottom:4px}
+.map{grid-column:1 / span 2; grid-row:2; position:relative}
+#map{position:absolute; inset:8px; border-radius:16px}
+.hbar{grid-column:3; grid-row:2}
+.timeline{grid-column:1 / span 2; grid-row:3}
+.donuts{grid-column:3; grid-row:3; display:grid; grid-template-columns:1fr; grid-auto-rows:1fr; gap:12px}
+canvas{width:100%; height:100%}
+@media (max-width:1100px){
+  body{overflow:auto}
+  .main{height:auto}
+  .grid{grid-template-columns:1fr; grid-template-rows:auto; height:auto}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .map,.hbar,.timeline,.donuts{grid-column:auto; grid-row:auto}
+  #map{position:relative; height:320px}
+}
+</style>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="brand">📊 Logistics Overview</div>
+    <div id="status" class="badge">Connecting…</div>
+  </header>
+  <div class="main">
+    <section class="grid">
+      <div class="card kpis">
+        <div class="kpi"><div class="label">Revenue (latest month)</div><div class="value" id="kpiRevenue">—</div></div>
+        <div class="kpi"><div class="label">Income (YTD)</div><div class="value" id="kpiIncome">—</div></div>
+        <div class="kpi"><div class="label">Expenses (YTD)</div><div class="value" id="kpiExpenses">—</div></div>
+        <div class="kpi"><div class="label">Savings / Profit (YTD)</div><div class="value" id="kpiProfit">—</div></div>
+        <div class="kpi"><div class="label">Deliveries (latest month)</div><div class="value" id="kpiDeliveries">—</div></div>
+      </div>
+      <div class="card map">
+        <h3>Trade Map — Imports & Exports</h3>
+        <div id="map"></div>
+      </div>
+      <div class="card hbar">
+        <h3>Sales Target % per Rep (YTD)</h3>
+        <canvas id="barTargets"></canvas>
+      </div>
+      <div class="card timeline">
+        <h3>Income vs Expenses — Monthly</h3>
+        <canvas id="lineIE"></canvas>
+      </div>
+      <div class="donuts">
+        <div class="card"><h3>Successful Transactions</h3><canvas id="donutSuccess"></canvas></div>
+        <div class="card"><h3>Returning Customer Rate</h3><canvas id="donutReturning"></canvas></div>
+        <div class="card"><h3>Sales Target (Overall YTD)</h3><canvas id="donutTarget"></canvas></div>
+      </div>
+    </section>
+  </div>
+
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  let SUPABASE_URL = window.SUPABASE_URL; let SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY;
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY){ try{ const mod = await import('./js/config.js'); SUPABASE_URL = mod.SUPABASE_URL; SUPABASE_ANON_KEY = mod.SUPABASE_ANON_KEY; }catch(e){} }
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const status=document.getElementById('status');
+  const fmtZAR = (n)=> n==null ? '—' : new Intl.NumberFormat('en-ZA',{style:'currency',currency:'ZAR',maximumFractionDigits:0}).format(Number(n));
+  try{ const {error} = await supabase.from('v_profit_monthly').select('*').limit(1); if(error) throw error; status.textContent='Connected'; }catch(e){ status.textContent='Error'; status.className='badge err'; console.error(e); }
+  const { data: pm } = await supabase.from('v_profit_monthly').select('*').order('month');
+  if(pm&&pm.length){
+    const labels=pm.map(r=>new Date(r.month).toISOString().slice(0,7));
+    const inc=pm.map(r=>Number(r.income_zar||0));
+    const exp=pm.map(r=>Number(r.expense_zar||0));
+    const latest=pm[pm.length-1];
+    document.getElementById('kpiRevenue').textContent=fmtZAR(Number(latest.income_zar||0));
+    const yr=new Date().getFullYear(); let yInc=0,yExp=0;
+    pm.filter(r=>new Date(r.month).getFullYear()===yr).forEach(r=>{ yInc+=Number(r.income_zar||0); yExp+=Number(r.expense_zar||0); });
+    document.getElementById('kpiIncome').textContent=fmtZAR(yInc);
+    document.getElementById('kpiExpenses').textContent=fmtZAR(yExp);
+    document.getElementById('kpiProfit').textContent=fmtZAR(yInc-yExp);
+    new Chart(document.getElementById('lineIE').getContext('2d'),{type:'line',data:{labels,datasets:[{label:'Income',data:inc},{label:'Expenses',data:exp}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true}}}});
+    const start=new Date(latest.month); const next=new Date(start.getFullYear(),start.getMonth()+1,1).toISOString();
+    const delivered=await supabase.from('shipments').select('id',{count:'exact',head:true}).gte('delivered_at',start.toISOString()).lt('delivered_at',next).eq('status','delivered');
+    document.getElementById('kpiDeliveries').textContent=delivered.count ?? '—';
+  }
+  const { data:ytd } = await supabase.from('v_sales_vs_target').select('*');
+  if(ytd){
+    const yr=new Date().getFullYear(); const agg={}, total={sales:0,target:0};
+    ytd.filter(r=>new Date(r.month).getFullYear()===yr).forEach(r=>{ const k=r.full_name; agg[k]=(agg[k]||{sales:0,target:0}); agg[k].sales+=Number(r.sales_zar||0); agg[k].target+=Number(r.target_zar||0); total.sales+=Number(r.sales_zar||0); total.target+=Number(r.target_zar||0); });
+    const labels=Object.keys(agg); const pct=labels.map(k=>{const t=agg[k]; return t.target>0?Math.min(150,Math.round(100*t.sales/t.target)):0;});
+    new Chart(document.getElementById('barTargets').getContext('2d'),{type:'bar',data:{labels,datasets:[{label:'% to YTD Target',data:pct}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{beginAtZero:true,max:150}}}});
+    const overall= total.target>0 ? Math.round(100*total.sales/total.target) : 0;
+    new Chart(document.getElementById('donutTarget').getContext('2d'),{type:'doughnut',data:{labels:['Achieved','Remaining'],datasets:[{data:[overall,Math.max(0,100-overall)]}]},options:{responsive:true,maintainAspectRatio:false}});
+  }
+  const invs = await supabase.from('invoices').select('id,status,client_id');
+  if(!invs.error){
+    const total=invs.data.length, paid=invs.data.filter(i=>i.status==='paid').length;
+    new Chart(document.getElementById('donutSuccess').getContext('2d'),{type:'doughnut',data:{labels:['Paid','Other'],datasets:[{data:[paid,Math.max(0,total-paid)]}]},options:{responsive:true,maintainAspectRatio:false}});
+    const counts={}; invs.data.forEach(i=>counts[i.client_id]=(counts[i.client_id]||0)+1);
+    const returning=Object.values(counts).filter(c=>c>=2).length, first=Object.values(counts).filter(c=>c===1).length;
+    new Chart(document.getElementById('donutReturning').getContext('2d'),{type:'doughnut',data:{labels:['Returning','First-time'],datasets:[{data:[returning,first]}]},options:{responsive:true,maintainAspectRatio:false}});
+  }
+  const GEO={'CN':[35.0,103.0],'DE':[51.0,10.0],'IN':[21.0,78.0],'BR':[-10.0,-55.0],'NL':[52.1,5.3],'ZA':[-28.5,24.7]};
+  const map=L.map('map',{zoomControl:false,dragging:false,scrollWheelZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false}).setView([14,10],2);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:2,attribution:'© OpenStreetMap'}).addTo(map);
+  function arc(a,b,color){ L.polyline([a,b],{color,weight:2,opacity:.7}).addTo(map); }
+  function bubble(latlon,val,color,title){ const r=Math.max(5,Math.sqrt(val)/200); L.circleMarker(latlon,{radius:r,color,weight:1,fillOpacity:.5}).addTo(map).bindTooltip(title); }
+  const hub=GEO['ZA'];
+  const imp=await supabase.from('v_imports_by_country').select('*');
+  (imp.data||[]).forEach(r=>{ const g=GEO[r.country_iso2]; if(!g) return; bubble(g,Number(r.import_value_zar||0),'#27f3d2',`${r.country_iso2}: ZAR ${Math.round(r.import_value_zar).toLocaleString()}`); arc(g,hub,'#27f3d2'); });
+  const exp=await supabase.from('v_exports_by_country').select('*');
+  (exp.data||[]).forEach(r=>{ const g=GEO[r.country_iso2]; if(!g) return; bubble(g,Number(r.export_value_zar||0),'#55ffa6',`${r.country_iso2}: ZAR ${Math.round(r.export_value_zar).toLocaleString()}`); arc(hub,g,'#55ffa6'); });
+</script>
+</body>
+</html>
