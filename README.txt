@@ -1,0 +1,1 @@
+Copy js/config.example.js to js/config.js and set your SUPABASE_URL and SUPABASE_ANON_KEY.

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trade — Logistics Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css" />
+  <script type="module" src="../js/boot.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="wrap">
+      <div class="brand">🚚 Logistics Dashboard <span id="status" class="badge">Connecting…</span></div>
+      <nav class="nav"><a class="" href="overview.html">Overview</a><a class="" href="sales.html">Sales</a><a class="active" href="trade.html">Trade</a><a class="" href="inventory.html">Inventory</a><a class="" href="operations.html">Operations</a></nav>
+    </div>
+  </header>
+  <main class="wrap">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<section class="grid" style="grid-template-columns:1fr;gap:16px">
+  <div class="card">
+    <h3>Global Imports & Exports</h3>
+    <div id="map" style="height:520px;border-radius:16px;overflow:hidden"></div>
+    <p class="muted">Bubble size = total value (ZAR). Data: v_imports_by_country & v_exports_by_country.</p>
+  </div>
+</section>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module" src="../js/tabs/trade.js"></script>
+
+  </main>
+  <footer class="wrap footer">Demo data via Supabase views • Chart.js + Leaflet • Responsive & shareable</footer>
+</body>
+</html>
