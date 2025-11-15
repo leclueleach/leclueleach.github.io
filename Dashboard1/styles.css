@@ -1,0 +1,854 @@
+:root{
+--bg: #020818;
+--border: 2px solid #6573a1;
+--border-radius: 10px;
+}
+
+/* ========== Background ========== */
+body {
+  background-image: linear-gradient(to right, #020818 , #071029);
+  margin: 0;
+  display: flex;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Inner orange area */
+.page {
+  /* background-color: var(--bg); */
+  flex: 1;
+  border-radius: 0;
+  position: relative;
+}
+
+/* ========== Header ========== */
+.top-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  gap: 10px;
+}
+
+.top-header img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.top-header h1 {
+  color: white;
+  margin: 0;
+  font-size: 59px;
+  font-weight: 600;
+  line-height: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.icon-box {
+  background-color: green;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ========== Filters (RED BOX) ========== */
+.red-box {
+  /* background-color: var(--bg); */
+  background-image: linear-gradient(
+  to bottom right,
+  #071029 20%,
+  #020818 80%
+);
+  width: 100%;
+  border-radius: 10px;
+  border:var(--border);
+  margin-top: 60px; /* space under header */
+  padding: 20px;
+  box-sizing: border-box;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-header {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 10px;
+  height: 20px;
+}
+
+.filter-icon {
+  width: 20px;
+  height: 100%;
+  background-color: #006400;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  line-height: 1;
+  color: white;
+  font-size: 20px;
+  font-weight: 200;
+  box-sizing: border-box;
+  /* background-color: rgba(0, 0, 0, 0.2); */
+}
+
+/* ========== Custom Dropdown (single + multi) ========== */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-label{
+  color: white;
+}
+
+.dropdown-toggle {
+  width: 100%;
+  padding: 10px 32px 10px 10px;
+  border-radius: 6px;
+  border: var(--border);
+  background-color: #02081800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.dropdown-chevron {
+  display: inline-block;
+  transform: rotate(90deg); /* down */
+  transition: transform 0.15s ease;
+  color: white;
+}
+
+.custom-dropdown.open .dropdown-chevron {
+  transform: rotate(-90deg); /* up */
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-radius: 6px;
+  margin-top: 4px;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); */
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  z-index: 10;
+}
+
+.custom-dropdown.open .dropdown-menu {
+  display: block;
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dropdown-option:hover {
+  background-color: #f0f0f0;
+}
+
+.option-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.option-check {
+  font-size: 14px;
+  color: white;
+  margin-right: 10px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.dropdown-option.selected .option-check {
+  opacity: 1;
+  color: #0d47a1;
+}
+
+/* ========== Middle Layout (purple + teal left, black right) ========== */
+.middle-layout {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 3fr 1fr; /* left 75%, right 25% */
+  gap: 20px;
+}
+
+.middle-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.middle-right {
+  display: flex;
+  flex-direction: column;
+}
+
+/* BLACK BOX AS CARD CONTAINER */
+.black-box {
+  background-image: linear-gradient(
+  to bottom right,
+  #071029 20%,
+  #020818 80%
+);
+  width: 100%;
+  border: var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Header */
+.shipments-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 16px;
+}
+
+.shipments-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.shipments-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.shipments-title {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.shipments-subtitle {
+  color: #9aa4c2;
+  font-size: 13px;
+}
+
+/* List */
+.shipments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* One shipment row */
+.shipment-row {
+  /* background-color: #08183b; */
+  border: var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+/* Main column */
+.shipment-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* HEADER ROW: code+tag left, status right */
+.shipment-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shipment-top-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shipment-code {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.shipment-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.shipment-tag--export {
+  color: #22c55e;
+  border-color: #22c55e;
+  background-color: rgba(34, 197, 94, 0.1);
+}
+
+.shipment-tag--import {
+  color: #a855f7;
+  border-color: #a855f7;
+  background-color: rgba(168, 85, 247, 0.12);
+}
+
+/* Status pill on top-right */
+.shipment-status-pill {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Title under header row */
+.shipment-title {
+  color: #e5e7eb;
+  font-size: 13px;
+}
+
+/* Location + duration row */
+.shipment-meta {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #9aa4c2;
+  margin-top: 2px;
+}
+
+.shipment-location {
+  flex-grow: 1; /* takes all left space */
+}
+
+.shipment-time {
+  margin-left: auto; /* pushes to far right */
+  text-align: right;
+  white-space: nowrap; /* keep it on one line */
+}
+
+/* Status colours */
+.status--in-transit {
+  color: #3b82f6; /* blue */
+}
+
+.status--customs {
+  color: #eab308; /* yellow */
+}
+
+.status--delivered {
+  color: #22c55e; /* green */
+}
+
+.status--processing {
+  color: #a855f7; /* purple */
+}
+
+/* ========== Purple scorecards ========== */
+.purple-box {
+  /* background-color: var(--bg); */
+  width: 100%;
+  /* border: var(--border); */
+  border-radius: 10px;
+  /* padding: 20px; */
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.scorecard-header {
+  background-image: linear-gradient(
+  to bottom right,
+  #071029 20%,
+  #020818 80%
+);
+  padding: 20px;
+  border: var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+}
+
+.scorecard-action {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  /* background-color: var(--bg); */
+  color: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.scorecard-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.scorecard-icon {
+  width: 60px;
+  height: 60px;
+  background-color: #006400;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.scorecard-label {
+  color: white;
+  font-size: 15px;
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+
+.scorecard-value {
+  color: white;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* ========== Teal charts (card + grid) ========== */
+
+.teal-box {
+  /* background-color: var(--bg);       */
+  width: 100%;
+  /* border: var(--border); */
+  border-radius: 10px;
+  /* padding: 20px; */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ========== Teal charts ========== */
+
+/* Outer teal strip behaves like purple-box: holds the two cards */
+.teal-box {
+  /* background-color: var(--bg); */
+  width: 100%;
+  border-radius: 10px;
+  /* padding: 20px; */
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Each graph is a card, like map-card / products-card */
+.graph-item {
+  background-image: linear-gradient(
+  to bottom right,
+  #071029 20%,
+  #020818 80%
+);
+  border: var(--border);   
+  border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Header inside the card – matches map/products/shipments style */
+.graph-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.graph-icon {
+  width: 40px;
+  height: 40px;
+  background-color: #006400;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.graph-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.graph-title {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.graph-subtitle {
+  color: #9aa4c2;
+  font-size: 13px;
+}
+
+/* Body area inside the card – like map-body but fixed height */
+.graph-body {
+  /* background-color: var(--bg); */
+  border-radius: 10px;
+  padding: 12px;
+  box-sizing: border-box;
+  height: 283px; /* you can tweak this */
+}
+
+/* Chart placeholders (same as before) */
+.chart-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background: repeating-linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.05) 0px,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 40px
+    ),
+    repeating-linear-gradient(
+      to top,
+      rgba(255, 255, 255, 0.05) 0px,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 1px,
+      transparent 40px
+    );
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-placeholder--line::after {
+  content: "";
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  top: 55%;
+  height: 0;
+  border-bottom: 2px solid #4fd1c5;
+  border-radius: 999px;
+  transform: skewY(-8deg);
+}
+
+.chart-placeholder--bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.chart-placeholder--bar .bar {
+  width: 10%;
+  background-color: #4fd1c5;
+  border-radius: 4px 4px 0 0;
+}
+
+
+/* ========== Pink section: map + products ========== */
+.pink-box {
+  /* background-color: var(--bg); */
+  width: 100%;
+  border-radius: 10px;
+  margin-top: 20px;
+  /* padding: 20px; */
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+}
+
+.products-card,
+.map-card {
+  background-image: linear-gradient(
+  to bottom right,
+  #071029 20%,
+  #020818 80%
+);
+  border: var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Products table */
+.products-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 16px;
+}
+
+.products-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #ff6b35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.products-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.products-label {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.products-subtitle {
+  color: #9aa4c2;
+  font-size: 13px;
+}
+
+.products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-row {
+  /* background-color: #08183b; */
+  border: var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.product-rank {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #1d4ed8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.product-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.product-sub {
+  color: #9aa4c2;
+  font-size: 12px;
+}
+
+.product-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.product-value {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.product-change {
+  font-size: 12px;
+}
+
+.product-change.positive {
+  color: #22c55e;
+}
+
+.product-change.negative {
+  color: #f97373;
+}
+
+/* Map header reuses icon/text pattern */
+.map-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+}
+
+.map-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #00bcd4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.map-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-label {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.map-subtitle {
+  color: #9aa4c2;
+  font-size: 13px;
+}
+
+/* /* Map body */
+.map-body {
+  /* background-color: var(--bg); */
+  border-radius: 10px;
+  padding: 16px;
+  box-sizing: border-box;
+  position: relative; /* needed for tooltip positioning */
+  overflow: hidden;
+}
+
+/* SVG sizing */
+#world-map {
+  width: 100%;
+  height: auto;
+}
+
+/* Base country style */
+.country {
+  fill: var(--bg);
+  stroke: blue;               /* border colour */
+  stroke-width: 2;             /* thicker outline than .2 */
+  transition:
+    fill 0.2s ease,
+    stroke 0.2s ease,
+    filter 0.2s ease;
+  /* subtle global glow */
+  /* filter: drop-shadow(0 0 4px rgba(15, 23, 42, 0.8)); */
+}
+
+/* Intensity levels (trade volume) */
+.country.low {
+  fill: #0f172a;                 /* very dark */
+}
+
+.country.medium {
+  fill: #2563eb;                 /* blue */
+  /* filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.7)); */
+}
+
+.country.high {
+  fill: #22c55e;                 /* bright green */
+  filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.9));
+}
+
+/* Selected country (click) – stronger stroke + glow */
+/* .country.selected {
+  stroke: #f97316;
+  stroke-width: 1.5;             
+  filter: drop-shadow(0 0 14px rgba(249, 115, 22, 0.95));
+} */
+
+/* Hover effect (on top of intensity) */
+.country:hover {
+  fill: blue;
+}
+
+.map-body {
+  /* background-color: var(--bg); */
+  border-radius: 10px;
+  padding: 16px;
+  box-sizing: border-box;
+  position: relative;      /* ⬅ important for tooltip positioning */
+  overflow: hidden;
+}
+
+/* Tooltip */
+.map-tooltip {
+  position: absolute;
+  pointer-events: none;    /* so hover isn't broken */
+  background: rgba(15, 23, 42, 0.95);
+  color: #e5e7eb;
+  font-size: 11px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transform: translate(-50%, -140%); /* center horizontally, sit above cursor */
+  white-space: nowrap;
+  z-index: 20;
+  border: 1px solid #94a3b880;
+}
+
+
+
+
+
