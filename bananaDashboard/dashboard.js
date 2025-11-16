@@ -475,3 +475,4 @@ function formatShortNumber(value) {
   return n.toString();
 }
 
+
