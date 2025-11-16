@@ -468,13 +468,13 @@ body {
   gap: 20px;
 }
 
-.teal-box {
-  height: 100%;          /* allow teal section to grow */
-}
-
 .middle-left {
   display: flex;
   flex-direction: column;
+}
+
+.teal-box {
+  flex: 1 1 auto;
 }
 
 /* Each graph is a card, like map-card / products-card */
@@ -844,6 +844,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
