@@ -461,7 +461,7 @@ body {
   background-image: linear-gradient(to bottom right, #071029 20%, #020818 80%);
   border: var(--border);
   border-radius: 10px;
-  padding: 16px 20px 8px;  /* slightly less top/bottom padding */
+  padding: 16px 20px 16px;  /* slightly less top/bottom padding */
   box-sizing: border-box;
 
   display: flex;
@@ -522,7 +522,7 @@ body {
 
 .graph-body canvas {
   width: 100% !important;
-  height: 100% !important;
+  height: 98% !important;
   display: block;
 }
 
@@ -823,6 +823,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
