@@ -467,7 +467,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  height: 390px;            /* try 390–400; tweak if needed */
+  height: 383px;            /* try 390–400; tweak if needed */
 }
 
 /* Header inside the card – matches map/products/shipments style */
@@ -823,6 +823,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
