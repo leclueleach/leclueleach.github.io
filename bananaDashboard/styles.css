@@ -476,11 +476,10 @@ body {
   padding: 20px;
   box-sizing: border-box;
 
-  /* Make each chart card behave like a fixed-height card */
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 260px;       /* tweak to 240–300px if you prefer */
+  height: 260px; /* adjust if you want taller/shorter charts */
 }
 
 /* Header inside the card – matches map/products/shipments style */
@@ -528,13 +527,11 @@ body {
 
 /* Body area inside the card – like map-body but fixed height */
 .graph-body {
-  /* background-color: var(--bg); */
   flex: 1 1 auto;
   padding: 12px 16px 16px;
   position: relative;
 }
 
-/* Make Chart.js canvases fill the graph body */
 .graph-body canvas {
   width: 100% !important;
   height: 100% !important;
@@ -838,6 +835,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
