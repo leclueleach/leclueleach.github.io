@@ -2,8 +2,8 @@
 // Hook Banana Dashboard UI to Supabase data
 
 // 1) Supabase init – fill in your own URL + anon key
-const SUPABASE_URL = "https://mwasxsyfowbciwhbrbmx.supabase.coo";
-const SUPABASE_ANON_KEY = "process.env.SUPABASE_KEY";
+const SUPABASE_URL = 'https://mvaxssyfowbciwhbrbmx.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUz...'; 
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -275,3 +275,4 @@ function formatNumber(value) {
   const num = Number(value || 0);
   return num.toLocaleString("en-US");
 }
+
