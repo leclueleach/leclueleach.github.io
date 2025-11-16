@@ -5,7 +5,7 @@
 const SUPABASE_URL = 'https://mwasxsyfowbciwhbrbmx.supabase.co'; // <-- your project URL
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13YXN4c3lmb3diY2l3aGJyYm14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3NzY4ODAsImV4cCI6MjA3ODM1Mjg4MH0.d76mOXeX3ZP2F_-X36FRSOshO2W-AVyJTHTOJY6VJlg';                    // <-- your anon public key
 
-console.log('SUPABASE_URL in dashboard.js:', SUPABASE_URL);
+console.log("SUPABASE_URL in dashboard.js:", SUPABASE_URL);
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -89,9 +89,9 @@ function renderScorecards(rows) {
   const routeSet = new Set(
     rows.map(
       (r) =>
-        `${r.origin_iso || r.origin_country}-${
-          r.destination_iso || r.destination_country
-        }`
+        (r.origin_iso || r.origin_country) +
+        "-" +
+        (r.destination_iso || r.destination_country)
     )
   );
   const activeRoutes = routeSet.size;
@@ -150,7 +150,7 @@ function renderRecentShipments(rows) {
     const tagLabel = s.trade_type_code === "EXPORT" ? "Export" : "Import";
     const statusClass = getStatusClass(s.shipment_status);
     const timeLabel = formatShipmentDuration(s);
-    const locationText = `📍 ${s.destination_country || "Unknown"}`;
+    const locationText = "📍 " + (s.destination_country || "Unknown");
 
     const row = document.createElement("div");
     row.className = "shipment-row";
@@ -181,10 +181,10 @@ function renderRecentShipments(rows) {
 function getStatusClass(status) {
   if (!status) return "";
   const s = status.toLowerCase();
-  if (s.includes("transit")) return "status--in-transit";
-  if (s.includes("custom")) return "status--customs";
-  if (s.includes("deliver")) return "status--delivered";
-  if (s.includes("process")) return "status--processing";
+  if (s.indexOf("transit") !== -1) return "status--in-transit";
+  if (s.indexOf("custom") !== -1) return "status--customs";
+  if (s.indexOf("deliver") !== -1) return "status--delivered";
+  if (s.indexOf("process") !== -1) return "status--processing";
   return "";
 }
 
@@ -196,7 +196,7 @@ function formatShipmentDuration(s) {
   if (
     s.arrival_date &&
     s.shipment_status &&
-    s.shipment_status.toLowerCase().includes("deliver")
+    s.shipment_status.toLowerCase().indexOf("deliver") !== -1
   ) {
     return "Completed";
   }
@@ -205,7 +205,7 @@ function formatShipmentDuration(s) {
   if (diffMs <= 0) return "0 days";
 
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-  return `${diffDays} day${diffDays === 1 ? "" : "s"}`;
+  return diffDays + " day" + (diffDays === 1 ? "" : "s");
 }
 
 // --------------------------------------------------
@@ -228,13 +228,18 @@ function renderTopProducts(rows) {
     entry.shipments.add(r.shipment_id);
   });
 
-  const list = Array.from(byCategory.values()).map((entry) => ({
-    category_name: entry.category_name,
-    revenue: entry.revenue,
-    shipments_count: entry.shipments.size,
-  }));
+  const list = Array.from(byCategory.values()).map(function (entry) {
+    return {
+      category_name: entry.category_name,
+      revenue: entry.revenue,
+      shipments_count: entry.shipments.size,
+    };
+  });
 
-  list.sort((a, b) => b.revenue - a.revenue);
+  list.sort(function (a, b) {
+    return b.revenue - a.revenue;
+  });
+
   const top = list.slice(0, 5);
 
   const listEl = document.querySelector(".products-list");
@@ -242,7 +247,7 @@ function renderTopProducts(rows) {
 
   listEl.innerHTML = "";
 
-  top.forEach((p, idx) => {
+  top.forEach(function (p, idx) {
     const row = document.createElement("div");
     row.className = "product-row";
     row.innerHTML = `
@@ -268,14 +273,12 @@ function renderTopProducts(rows) {
 function buildMonthlyBuckets(rows) {
   const buckets = new Map();
 
-  rows.forEach((r) => {
+  rows.forEach(function (r) {
     if (!r.departure_date) return;
 
     const d = r.departure_date;
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}`;
+    const key =
+      d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
 
     if (!buckets.has(key)) {
       buckets.set(key, {
@@ -299,21 +302,43 @@ function buildMonthlyBuckets(rows) {
     }
   });
 
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
 
   const keys = Array.from(buckets.keys()).sort();
-  const labels = keys.map((key) => {
-    const [year, month] = key.split("-");
-    return `${monthNames[Number(month) - 1]} ${year}`;
+  const labels = keys.map(function (key) {
+    const parts = key.split("-");
+    const year = parts[0];
+    const month = parts[1];
+    return monthNames[Number(month) - 1] + " " + year;
   });
 
-  const importRevenue = keys.map((k) => buckets.get(k).importRevenue);
-  const exportRevenue = keys.map((k) => buckets.get(k).exportRevenue);
-  const importQty = keys.map((k) => buckets.get(k).importQty);
-  const exportQty = keys.map((k) => buckets.get(k).exportQty);
+  const importRevenue = keys.map(function (k) {
+    return buckets.get(k).importRevenue;
+  });
+  const exportRevenue = keys.map(function (k) {
+    return buckets.get(k).exportRevenue;
+  });
+  const importQty = keys.map(function (k) {
+    return buckets.get(k).importQty;
+  });
+  const exportQty = keys.map(function (k) {
+    return buckets.get(k).exportQty;
+  });
 
-  return { labels, importRevenue, exportRevenue, importQty, exportQty };
+  return { labels: labels, importRevenue: importRevenue, exportRevenue: exportRevenue, importQty: importQty, exportQty: exportQty };
 }
 
 // --------------------------------------------------
@@ -324,7 +349,10 @@ function renderRevenueChart(rows) {
   if (!canvas || !window.Chart) return;
 
   const ctx = canvas.getContext("2d");
-  const { labels, importRevenue, exportRevenue } = buildMonthlyBuckets(rows);
+  const buckets = buildMonthlyBuckets(rows);
+  const labels = buckets.labels;
+  const importRevenue = buckets.importRevenue;
+  const exportRevenue = buckets.exportRevenue;
 
   if (revenueChartInstance) {
     revenueChartInstance.destroy();
@@ -333,7 +361,7 @@ function renderRevenueChart(rows) {
   revenueChartInstance = new Chart(ctx, {
     type: "line",
     data: {
-      labels,
+      labels: labels,
       datasets: [
         {
           label: "Import Revenue",
@@ -353,7 +381,7 @@ function renderRevenueChart(rows) {
       responsive: true,
       maintainAspectRatio: false,
       layout: {
-        padding: { bottom: 12 }, // extra space for x-axis labels
+        padding: { bottom: 12 },
       },
       plugins: {
         legend: {
@@ -363,9 +391,9 @@ function renderRevenueChart(rows) {
         },
         tooltip: {
           callbacks: {
-            label: (ctx) => {
+            label: function (ctx) {
               const v = ctx.parsed.y || 0;
-              return `${ctx.dataset.label}: ${formatCurrency(v)}`;
+              return ctx.dataset.label + ": " + formatCurrency(v);
             },
           },
         },
@@ -378,7 +406,9 @@ function renderRevenueChart(rows) {
         y: {
           ticks: {
             color: "#9ca3af",
-            callback: (value) => formatShortNumber(value),
+            callback: function (value) {
+              return formatShortNumber(value);
+            },
           },
           grid: { color: "rgba(148, 163, 184, 0.15)" },
         },
@@ -386,7 +416,6 @@ function renderRevenueChart(rows) {
     },
   });
 }
-
 
 // --------------------------------------------------
 // Trade Volume (bar chart)
@@ -396,7 +425,10 @@ function renderTradeVolumeChart(rows) {
   if (!canvas || !window.Chart) return;
 
   const ctx = canvas.getContext("2d");
-  const { labels, importQty, exportQty } = buildMonthlyBuckets(rows);
+  const buckets = buildMonthlyBuckets(rows);
+  const labels = buckets.labels;
+  const importQty = buckets.importQty;
+  const exportQty = buckets.exportQty;
 
   if (volumeChartInstance) {
     volumeChartInstance.destroy();
@@ -405,7 +437,7 @@ function renderTradeVolumeChart(rows) {
   volumeChartInstance = new Chart(ctx, {
     type: "bar",
     data: {
-      labels,
+      labels: labels,
       datasets: [
         {
           label: "Import Volume",
@@ -423,7 +455,7 @@ function renderTradeVolumeChart(rows) {
       responsive: true,
       maintainAspectRatio: false,
       layout: {
-        padding: { bottom: 12 }, // extra space for x-axis labels
+        padding: { bottom: 12 },
       },
       plugins: {
         legend: {
@@ -433,9 +465,9 @@ function renderTradeVolumeChart(rows) {
         },
         tooltip: {
           callbacks: {
-            label: (ctx) => {
+            label: function (ctx) {
               const v = ctx.parsed.y || 0;
-              return `${ctx.dataset.label}: ${formatNumber(v)} units`;
+              return ctx.dataset.label + ": " + formatNumber(v) + " units";
             },
           },
         },
@@ -448,7 +480,9 @@ function renderTradeVolumeChart(rows) {
         y: {
           ticks: {
             color: "#9ca3af",
-            callback: (value) => formatShortNumber(value),
+            callback: function (value) {
+              return formatShortNumber(value);
+            },
           },
           grid: { color: "rgba(148, 163, 184, 0.15)" },
         },
@@ -456,7 +490,6 @@ function renderTradeVolumeChart(rows) {
     },
   });
 }
-
 
 // --------------------------------------------------
 // Helpers
@@ -477,11 +510,13 @@ function formatNumber(value) {
 
 function formatShortNumber(value) {
   const n = Number(value || 0);
-  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + "B";
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (n >= 1_000) return (n / 1_000).toFixed(1) + "k";
+  if (n >= 1000000000) return (n / 1000000000).toFixed(1) + "B";
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
+  if (n >= 1000) return (n / 1000).toFixed(1) + "k";
   return n.toString();
 }
+
+
 
 
 
