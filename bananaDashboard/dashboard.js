@@ -11,14 +11,24 @@ const supabaseClient = window.supabase.createClient(
 );
 
 // 2) On load: fetch data and render widgets
-document.addEventListener('DOMContentLoaded', async () => {
-  console.log('✅ dashboard.js DOMContentLoaded fired');
+document.addEventListener("DOMContentLoaded", async () => {
+  console.log("✅ dashboard.js DOMContentLoaded fired");
 
-  const { data, error } = await supabaseClient
-    .from('vw_shipment_item_enriched')
-    .select('*');
+  try {
+    const shipments = await fetchAllShipments();
+    console.log("✅ shipments loaded:", shipments.length);
 
-  console.log('✅ shipments loaded:', data?.length, error);
+    if (!shipments.length) {
+      console.warn("⚠️ No shipment data found");
+      return;
+    }
+
+    renderScorecards(shipments);
+    renderRecentShipments(shipments);
+    renderTopProducts(shipments);
+  } catch (err) {
+    console.error("Error initialising dashboard:", err);
+  }
 });
 
 // ------------------------------------------
@@ -267,6 +277,7 @@ function formatNumber(value) {
   const num = Number(value || 0);
   return num.toLocaleString("en-US");
 }
+
 
 
 
