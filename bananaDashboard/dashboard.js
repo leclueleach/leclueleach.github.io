@@ -352,6 +352,8 @@ function renderRevenueChart(rows) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+    padding: { bottom: 12 }, 
       plugins: {
         legend: {
           labels: {
@@ -418,6 +420,8 @@ function renderTradeVolumeChart(rows) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: {
+    padding: { bottom: 12 }, 
       plugins: {
         legend: {
           labels: {
@@ -474,5 +478,6 @@ function formatShortNumber(value) {
   if (n >= 1_000) return (n / 1_000).toFixed(1) + "k";
   return n.toString();
 }
+
 
 
