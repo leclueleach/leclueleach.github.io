@@ -442,27 +442,9 @@ body {
 
 /* ========== Teal charts (card + grid) ========== */
 
+/* ========== Teal charts (card + grid) ========== */
 .teal-box {
-  /* background-color: var(--bg);       */
   width: 100%;
-  height: 530px;
-  /* border: var(--border); */
-  border-radius: 10px;
-  /* padding: 20px; */
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* ========== Teal charts ========== */
-
-/* Outer teal strip behaves like purple-box: holds the two cards */
-.teal-box {
-  /* background-color: var(--bg); */
-  width: 100%;
-  border-radius: 10px;
-  /* padding: 20px; */
   box-sizing: border-box;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -474,22 +456,18 @@ body {
   flex-direction: column;
 }
 
-.teal-box {
-  flex: 1 1 auto;
-}
-
 /* Each graph is a card, like map-card / products-card */
 .graph-item {
   background-image: linear-gradient(to bottom right, #071029 20%, #020818 80%);
   border: var(--border);
   border-radius: 10px;
-  padding: 20px;
+  padding: 16px 20px 12px;  /* slightly less top/bottom padding */
   box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  height: 370px; /* adjust if you want taller/shorter charts */
+  gap: 8px;
+  height: 390px;            /* try 390–400; tweak if needed */
 }
 
 /* Header inside the card – matches map/products/shipments style */
@@ -538,7 +516,7 @@ body {
 /* Body area inside the card – like map-body but fixed height */
 .graph-body {
   flex: 1 1 auto;
-  padding: 12px 16px 16px;
+  padding: 4px 16px 8px;    /* was 12px 16px 16px */
   position: relative;
 }
 
@@ -845,6 +823,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
