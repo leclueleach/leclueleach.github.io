@@ -468,6 +468,15 @@ body {
   gap: 20px;
 }
 
+.teal-box {
+  height: 100%;          /* allow teal section to grow */
+}
+
+.middle-left {
+  display: flex;
+  flex-direction: column;
+}
+
 /* Each graph is a card, like map-card / products-card */
 .graph-item {
   background-image: linear-gradient(to bottom right, #071029 20%, #020818 80%);
@@ -479,7 +488,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 300px; /* adjust if you want taller/shorter charts */
+  height: 350px; /* adjust if you want taller/shorter charts */
 }
 
 /* Header inside the card – matches map/products/shipments style */
@@ -835,6 +844,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
