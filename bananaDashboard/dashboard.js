@@ -353,7 +353,8 @@ function renderRevenueChart(rows) {
       responsive: true,
       maintainAspectRatio: false,
       layout: {
-    padding: { bottom: 12 }, 
+        padding: { bottom: 12 }, // extra space for x-axis labels
+      },
       plugins: {
         legend: {
           labels: {
@@ -385,6 +386,7 @@ function renderRevenueChart(rows) {
     },
   });
 }
+
 
 // --------------------------------------------------
 // Trade Volume (bar chart)
@@ -421,7 +423,8 @@ function renderTradeVolumeChart(rows) {
       responsive: true,
       maintainAspectRatio: false,
       layout: {
-    padding: { bottom: 12 }, 
+        padding: { bottom: 12 }, // extra space for x-axis labels
+      },
       plugins: {
         legend: {
           labels: {
@@ -454,6 +457,7 @@ function renderTradeVolumeChart(rows) {
   });
 }
 
+
 // --------------------------------------------------
 // Helpers
 // --------------------------------------------------
@@ -478,6 +482,7 @@ function formatShortNumber(value) {
   if (n >= 1_000) return (n / 1_000).toFixed(1) + "k";
   return n.toString();
 }
+
 
 
 
