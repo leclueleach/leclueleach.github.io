@@ -445,7 +445,6 @@ body {
 /* ========== Teal charts (card + grid) ========== */
 .teal-box {
   width: 100%;
-  heigh: 283px;
   box-sizing: border-box;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -523,7 +522,7 @@ body {
 
 .graph-body canvas {
   width: 100% !important;
-  height: 100% !important;
+  height: 80% !important;
   display: block;
 }
 
@@ -824,6 +823,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
