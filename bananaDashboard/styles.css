@@ -526,6 +526,13 @@ body {
   height: 283px; /* you can tweak this */
 }
 
+/* Make Chart.js canvases fill the graph body */
+.graph-body canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
 /* Chart placeholders (same as before) */
 .chart-placeholder {
   width: 100%;
@@ -823,3 +830,4 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
