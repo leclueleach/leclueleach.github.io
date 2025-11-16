@@ -475,9 +475,12 @@ body {
   border-radius: 10px;
   padding: 20px;
   box-sizing: border-box;
+
+  /* Make each chart card behave like a fixed-height card */
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: 260px;       /* tweak to 240–300px if you prefer */
 }
 
 /* Header inside the card – matches map/products/shipments style */
@@ -515,13 +518,6 @@ body {
 .graph-subtitle {
   color: #9aa4c2;
   font-size: 13px;
-}
-
-/* Make each graph card a fixed, consistent height */
-.graph-card {
-  display: flex;
-  flex-direction: column;
-  height: 260px;          /* tweak to taste: 240–300px works nicely */
 }
 
 /* Header stays on top, chart fills the rest */
@@ -842,5 +838,6 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
