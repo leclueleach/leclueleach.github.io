@@ -479,7 +479,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 260px; /* adjust if you want taller/shorter charts */
+  height: 283px; /* adjust if you want taller/shorter charts */
 }
 
 /* Header inside the card – matches map/products/shipments style */
@@ -835,6 +835,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
