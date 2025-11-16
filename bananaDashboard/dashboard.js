@@ -2,25 +2,26 @@
 // Hook Banana Dashboard UI to Supabase data
 
 // 1) Supabase init – fill in your own URL + anon key
-const SUPABASE_URL = 'https://mwasxsyfowbciwhbrbmx.supabase.co'; // ✅ your project URL
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';                    // ✅ your anon public key
+const SUPABASE_URL = 'https://mwasxsyfowbciwhbrbmx.supabase.co'; // <-- your project URL
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13YXN4c3lmb3diY2l3aGJyYm14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3NzY4ODAsImV4cCI6MjA3ODM1Mjg4MH0.d76mOXeX3ZP2F_-X36FRSOshO2W-AVyJTHTOJY6VJlg';                    // <-- your anon public key
 
 console.log('SUPABASE_URL in dashboard.js:', SUPABASE_URL);
 
-// Create Supabase client
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
-// (optional but handy) expose it globally if we ever want it elsewhere
+// expose globally if needed elsewhere
 window.supabaseClient = supabaseClient;
 
-// Chart.js instances so we can update/destroy them later
+// Chart.js instances
 let revenueChartInstance = null;
 let volumeChartInstance = null;
 
-// 2) On load: fetch data and render widgets
+// --------------------------------------------------
+// On load
+// --------------------------------------------------
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ dashboard.js DOMContentLoaded fired");
 
@@ -28,20 +29,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const shipments = await fetchAllShipments();
     console.log("✅ shipments loaded:", shipments.length);
 
-    // Cache for later (filters, map, etc.)
-    window._allShipmentsCache = shipments;
+    window._allShipmentsCache = shipments; // cache for filters later
 
     if (!shipments.length) {
       console.warn("⚠️ No shipment data found");
       return;
     }
 
-    // Existing cards
+    // Cards + lists
     renderScorecards(shipments);
     renderRecentShipments(shipments);
     renderTopProducts(shipments);
 
-    // New charts
+    // Charts
     renderRevenueChart(shipments);
     renderTradeVolumeChart(shipments);
   } catch (err) {
@@ -49,10 +49,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-
-// ------------------------------------------
+// --------------------------------------------------
 // DATA FETCH
-// ------------------------------------------
+// --------------------------------------------------
 async function fetchAllShipments() {
   const { data, error } = await supabaseClient
     .from("vw_shipment_item_enriched")
@@ -63,7 +62,6 @@ async function fetchAllShipments() {
     return [];
   }
 
-  // Convert dates to JS Date objects for easier handling
   return data.map((row) => ({
     ...row,
     departure_date: row.departure_date ? new Date(row.departure_date) : null,
@@ -71,17 +69,15 @@ async function fetchAllShipments() {
   }));
 }
 
-// ------------------------------------------
+// --------------------------------------------------
 // SCORECARDS
-// ------------------------------------------
+// --------------------------------------------------
 function renderScorecards(rows) {
-  // Total revenue (all trades, all time)
   const totalRevenue = rows.reduce(
     (sum, r) => sum + Number(r.total_value_usd || 0),
     0
   );
 
-  // Export + import volumes (quantity)
   const exportVolume = rows
     .filter((r) => r.trade_type_code === "EXPORT")
     .reduce((sum, r) => sum + Number(r.quantity || 0), 0);
@@ -90,7 +86,6 @@ function renderScorecards(rows) {
     .filter((r) => r.trade_type_code === "IMPORT")
     .reduce((sum, r) => sum + Number(r.quantity || 0), 0);
 
-  // Active routes = distinct origin/destination pairs
   const routeSet = new Set(
     rows.map(
       (r) =>
@@ -101,7 +96,6 @@ function renderScorecards(rows) {
   );
   const activeRoutes = routeSet.size;
 
-  // Inject into the 4 scorecards in order
   const scoreValues = document.querySelectorAll(".scorecard-value");
   if (scoreValues.length >= 4) {
     scoreValues[0].textContent = formatCurrency(totalRevenue);
@@ -111,16 +105,14 @@ function renderScorecards(rows) {
   }
 }
 
-// ------------------------------------------
-// RECENT SHIPMENTS LIST
-// ------------------------------------------
+// --------------------------------------------------
+// RECENT SHIPMENTS
+// --------------------------------------------------
 function renderRecentShipments(rows) {
-  // Group by shipment_id so we don't list duplicates for each line item
   const shipmentsMap = new Map();
 
   rows.forEach((r) => {
-    const existing = shipmentsMap.get(r.shipment_id);
-    if (!existing) {
+    if (!shipmentsMap.has(r.shipment_id)) {
       shipmentsMap.set(r.shipment_id, {
         shipment_id: r.shipment_id,
         invoice_number: r.invoice_number,
@@ -130,7 +122,6 @@ function renderRecentShipments(rows) {
         trade_type_code: r.trade_type_code,
         destination_country: r.destination_country,
         destination_iso: r.destination_iso,
-        // store first category; could be improved later
         category_name: r.category_name,
       });
     }
@@ -138,20 +129,16 @@ function renderRecentShipments(rows) {
 
   const shipments = Array.from(shipmentsMap.values());
 
-  // Sort by most recent departure_date
   shipments.sort((a, b) => {
     const da = a.departure_date ? a.departure_date.getTime() : 0;
     const db = b.departure_date ? b.departure_date.getTime() : 0;
     return db - da;
   });
 
-  // Take top 4 for the panel (you can increase this later)
   const topShipments = shipments.slice(0, 4);
-
   const listEl = document.querySelector(".shipments-list");
   if (!listEl) return;
 
-  // Clear static HTML
   listEl.innerHTML = "";
 
   topShipments.forEach((s) => {
@@ -161,10 +148,8 @@ function renderRecentShipments(rows) {
         : "shipment-tag--import";
 
     const tagLabel = s.trade_type_code === "EXPORT" ? "Export" : "Import";
-
     const statusClass = getStatusClass(s.shipment_status);
     const timeLabel = formatShipmentDuration(s);
-
     const locationText = `📍 ${s.destination_country || "Unknown"}`;
 
     const row = document.createElement("div");
@@ -223,11 +208,10 @@ function formatShipmentDuration(s) {
   return `${diffDays} day${diffDays === 1 ? "" : "s"}`;
 }
 
-// ------------------------------------------
+// --------------------------------------------------
 // TOP PRODUCTS (by category)
-// ------------------------------------------
+// --------------------------------------------------
 function renderTopProducts(rows) {
-  // Aggregate by category: shipments count + revenue
   const byCategory = new Map();
 
   rows.forEach((r) => {
@@ -250,9 +234,7 @@ function renderTopProducts(rows) {
     shipments_count: entry.shipments.size,
   }));
 
-  // Sort by revenue descending
   list.sort((a, b) => b.revenue - a.revenue);
-
   const top = list.slice(0, 5);
 
   const listEl = document.querySelector(".products-list");
@@ -280,26 +262,9 @@ function renderTopProducts(rows) {
   });
 }
 
-// ------------------------------------------
-// Helpers
-// ------------------------------------------
-function formatCurrency(value) {
-  const num = Number(value || 0);
-  return num.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  });
-}
-
-function formatNumber(value) {
-  const num = Number(value || 0);
-  return num.toLocaleString("en-US");
-}
-
-// ------------------------------------------
-// Monthly aggregation helpers
-// ------------------------------------------
+// --------------------------------------------------
+// Monthly aggregation for charts
+// --------------------------------------------------
 function buildMonthlyBuckets(rows) {
   const buckets = new Map();
 
@@ -334,11 +299,10 @@ function buildMonthlyBuckets(rows) {
     }
   });
 
-  // Sort by month ascending
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  const keys = Array.from(buckets.keys()).sort(); // e.g. ["2024-01", "2024-02", ...]
+  const keys = Array.from(buckets.keys()).sort();
   const labels = keys.map((key) => {
     const [year, month] = key.split("-");
     return `${monthNames[Number(month) - 1]} ${year}`;
@@ -352,9 +316,9 @@ function buildMonthlyBuckets(rows) {
   return { labels, importRevenue, exportRevenue, importQty, exportQty };
 }
 
-// ------------------------------------------
+// --------------------------------------------------
 // Revenue Trends (line chart)
-// ------------------------------------------
+// --------------------------------------------------
 function renderRevenueChart(rows) {
   const canvas = document.getElementById("revenueChart");
   if (!canvas || !window.Chart) return;
@@ -420,9 +384,9 @@ function renderRevenueChart(rows) {
   });
 }
 
-// ------------------------------------------
+// --------------------------------------------------
 // Trade Volume (bar chart)
-// ------------------------------------------
+// --------------------------------------------------
 function renderTradeVolumeChart(rows) {
   const canvas = document.getElementById("volumeChart");
   if (!canvas || !window.Chart) return;
@@ -471,12 +435,10 @@ function renderTradeVolumeChart(rows) {
       },
       scales: {
         x: {
-          stacked: false,
           ticks: { color: "#9ca3af" },
           grid: { color: "rgba(148, 163, 184, 0.15)" },
         },
         y: {
-          stacked: false,
           ticks: {
             color: "#9ca3af",
             callback: (value) => formatShortNumber(value),
@@ -488,7 +450,23 @@ function renderTradeVolumeChart(rows) {
   });
 }
 
-// Short number helper (e.g. 1200000 -> "1.2M")
+// --------------------------------------------------
+// Helpers
+// --------------------------------------------------
+function formatCurrency(value) {
+  const num = Number(value || 0);
+  return num.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
+}
+
+function formatNumber(value) {
+  const num = Number(value || 0);
+  return num.toLocaleString("en-US");
+}
+
 function formatShortNumber(value) {
   const n = Number(value || 0);
   if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + "B";
@@ -496,13 +474,3 @@ function formatShortNumber(value) {
   if (n >= 1_000) return (n / 1_000).toFixed(1) + "k";
   return n.toString();
 }
-
-
-
-
-
-
-
-
-
-
