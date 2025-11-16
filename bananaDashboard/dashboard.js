@@ -2,15 +2,23 @@
 // Hook Banana Dashboard UI to Supabase data
 
 // 1) Supabase init – fill in your own URL + anon key
-const SUPABASE_URL = 'https://mwasxsyfowbciwhbrbmx.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13YXN4c3lmb3diY2l3aGJyYm14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI3NzY4ODAsImV4cCI6MjA3ODM1Mjg4MH0.d76mOXeX3ZP2F_-X36FRSOshO2W-AVyJTHTOJY6VJlg'; 
+const SUPABASE_URL = 'https://mwasxsyfowbciwhbrbmx.supabase.co'; // ✅ your project URL
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';                    // ✅ your anon public key
 
 console.log('SUPABASE_URL in dashboard.js:', SUPABASE_URL);
 
+// Create Supabase client
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
+
+// (optional but handy) expose it globally if we ever want it elsewhere
+window.supabaseClient = supabaseClient;
+
+// Chart.js instances so we can update/destroy them later
+let revenueChartInstance = null;
+let volumeChartInstance = null;
 
 // 2) On load: fetch data and render widgets
 document.addEventListener("DOMContentLoaded", async () => {
@@ -20,18 +28,27 @@ document.addEventListener("DOMContentLoaded", async () => {
     const shipments = await fetchAllShipments();
     console.log("✅ shipments loaded:", shipments.length);
 
+    // Cache for later (filters, map, etc.)
+    window._allShipmentsCache = shipments;
+
     if (!shipments.length) {
       console.warn("⚠️ No shipment data found");
       return;
     }
 
+    // Existing cards
     renderScorecards(shipments);
     renderRecentShipments(shipments);
     renderTopProducts(shipments);
+
+    // New charts
+    renderRevenueChart(shipments);
+    renderTradeVolumeChart(shipments);
   } catch (err) {
     console.error("Error initialising dashboard:", err);
   }
 });
+
 
 // ------------------------------------------
 // DATA FETCH
@@ -279,6 +296,207 @@ function formatNumber(value) {
   const num = Number(value || 0);
   return num.toLocaleString("en-US");
 }
+
+// ------------------------------------------
+// Monthly aggregation helpers
+// ------------------------------------------
+function buildMonthlyBuckets(rows) {
+  const buckets = new Map();
+
+  rows.forEach((r) => {
+    if (!r.departure_date) return;
+
+    const d = r.departure_date;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
+
+    if (!buckets.has(key)) {
+      buckets.set(key, {
+        importRevenue: 0,
+        exportRevenue: 0,
+        importQty: 0,
+        exportQty: 0,
+      });
+    }
+
+    const bucket = buckets.get(key);
+    const value = Number(r.total_value_usd || 0);
+    const qty = Number(r.quantity || 0);
+
+    if (r.trade_type_code === "IMPORT") {
+      bucket.importRevenue += value;
+      bucket.importQty += qty;
+    } else if (r.trade_type_code === "EXPORT") {
+      bucket.exportRevenue += value;
+      bucket.exportQty += qty;
+    }
+  });
+
+  // Sort by month ascending
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const keys = Array.from(buckets.keys()).sort(); // e.g. ["2024-01", "2024-02", ...]
+  const labels = keys.map((key) => {
+    const [year, month] = key.split("-");
+    return `${monthNames[Number(month) - 1]} ${year}`;
+  });
+
+  const importRevenue = keys.map((k) => buckets.get(k).importRevenue);
+  const exportRevenue = keys.map((k) => buckets.get(k).exportRevenue);
+  const importQty = keys.map((k) => buckets.get(k).importQty);
+  const exportQty = keys.map((k) => buckets.get(k).exportQty);
+
+  return { labels, importRevenue, exportRevenue, importQty, exportQty };
+}
+
+// ------------------------------------------
+// Revenue Trends (line chart)
+// ------------------------------------------
+function renderRevenueChart(rows) {
+  const canvas = document.getElementById("revenueChart");
+  if (!canvas || !window.Chart) return;
+
+  const ctx = canvas.getContext("2d");
+  const { labels, importRevenue, exportRevenue } = buildMonthlyBuckets(rows);
+
+  if (revenueChartInstance) {
+    revenueChartInstance.destroy();
+  }
+
+  revenueChartInstance = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Import Revenue",
+          data: importRevenue,
+          borderWidth: 2,
+          tension: 0.3,
+        },
+        {
+          label: "Export Revenue",
+          data: exportRevenue,
+          borderWidth: 2,
+          tension: 0.3,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: "#e5e7eb",
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed.y || 0;
+              return `${ctx.dataset.label}: ${formatCurrency(v)}`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: "#9ca3af" },
+          grid: { color: "rgba(148, 163, 184, 0.15)" },
+        },
+        y: {
+          ticks: {
+            color: "#9ca3af",
+            callback: (value) => formatShortNumber(value),
+          },
+          grid: { color: "rgba(148, 163, 184, 0.15)" },
+        },
+      },
+    },
+  });
+}
+
+// ------------------------------------------
+// Trade Volume (bar chart)
+// ------------------------------------------
+function renderTradeVolumeChart(rows) {
+  const canvas = document.getElementById("volumeChart");
+  if (!canvas || !window.Chart) return;
+
+  const ctx = canvas.getContext("2d");
+  const { labels, importQty, exportQty } = buildMonthlyBuckets(rows);
+
+  if (volumeChartInstance) {
+    volumeChartInstance.destroy();
+  }
+
+  volumeChartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Import Volume",
+          data: importQty,
+          borderWidth: 1,
+        },
+        {
+          label: "Export Volume",
+          data: exportQty,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: "#e5e7eb",
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const v = ctx.parsed.y || 0;
+              return `${ctx.dataset.label}: ${formatNumber(v)} units`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          stacked: false,
+          ticks: { color: "#9ca3af" },
+          grid: { color: "rgba(148, 163, 184, 0.15)" },
+        },
+        y: {
+          stacked: false,
+          ticks: {
+            color: "#9ca3af",
+            callback: (value) => formatShortNumber(value),
+          },
+          grid: { color: "rgba(148, 163, 184, 0.15)" },
+        },
+      },
+    },
+  });
+}
+
+// Short number helper (e.g. 1200000 -> "1.2M")
+function formatShortNumber(value) {
+  const n = Number(value || 0);
+  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + "B";
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+  if (n >= 1_000) return (n / 1_000).toFixed(1) + "k";
+  return n.toString();
+}
+
 
 
 
