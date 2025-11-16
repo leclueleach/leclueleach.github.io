@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My First Website</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <!-- HEADER -->
+      <header class="top-header">
+        <div class="icon-box">
+          <img src="your-icon.png" alt="Icon" />
+        </div>
+        <h1>Banana Pty Ltd.</h1>
+      </header>
+
+      <!-- FILTERS (RED BOX) -->
+      <div class="red-box">
+        <!-- 1: single dropdown -->
+        <div class="filter-item">
+          <div class="filter-header">
+            <div class="filter-icon">F1</div>
+            <span class="filter-label">Time Period</span>
+          </div>
+
+          <div class="custom-dropdown" data-multi="false">
+            <button type="button" class="dropdown-toggle">
+              <span class="dropdown-label">Current Month</span>
+              <span class="dropdown-chevron">❯</span>
+            </button>
+
+            <div class="dropdown-menu">
+              <div class="dropdown-option" data-value="A">
+                <span class="option-text">Current Month</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="B">
+                <span class="option-text">Last Month</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="C">
+                <span class="option-text">Last 3 Months</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="D">
+                <span class="option-text">Last 6 Months</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="E">
+                <span class="option-text">Last Year</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="F">
+                <span class="option-text">All Time</span>
+                <span class="option-check">✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2: multi -->
+        <div class="filter-item">
+          <div class="filter-header">
+            <div class="filter-icon">F2</div>
+            <span class="filter-label">Region</span>
+          </div>
+
+          <div class="custom-dropdown" data-multi="true">
+            <button type="button" class="dropdown-toggle">
+              <span class="dropdown-label">All Regions</span>
+              <span class="dropdown-chevron">❯</span>
+            </button>
+
+            <div class="dropdown-menu">
+              <div class="dropdown-option" data-value="A">
+                <span class="option-text">All Regions</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="B">
+                <span class="option-text">Africa</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="C">
+                <span class="option-text">Americas</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="D">
+                <span class="option-text">Asia</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="E">
+                <span class="option-text">Europe</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="F">
+                <span class="option-text">Oceania</span>
+                <span class="option-check">✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3: multi -->
+        <div class="filter-item">
+          <div class="filter-header">
+            <div class="filter-icon">F3</div>
+            <span class="filter-label">Product Category</span>
+          </div>
+
+          <div class="custom-dropdown" data-multi="true">
+            <button type="button" class="dropdown-toggle">
+              <span class="dropdown-label">All categories</span>
+              <span class="dropdown-chevron">❯</span>
+            </button>
+
+            <div class="dropdown-menu">
+              <div class="dropdown-option" data-value="A">
+                <span class="option-text">All categories</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="B">
+                <span class="option-text">Automotive</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="C">
+                <span class="option-text">Electronics</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="D">
+                <span class="option-text">Chemicals</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="E">
+                <span class="option-text">Food & Beverages</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="F">
+                <span class="option-text">Machinery</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="G">
+                <span class="option-text">Textiles</span>
+                <span class="option-check">✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4: multi -->
+        <div class="filter-item">
+          <div class="filter-header">
+            <div class="filter-icon">F4</div>
+            <span class="filter-label">Trade Type</span>
+          </div>
+
+          <div class="custom-dropdown" data-multi="true">
+            <button type="button" class="dropdown-toggle">
+              <span class="dropdown-label">All Trade</span>
+              <span class="dropdown-chevron">❯</span>
+            </button>
+
+            <div class="dropdown-menu">
+              <div class="dropdown-option" data-value="A">
+                <span class="option-text">All Trade</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="B">
+                <span class="option-text">Imports Only</span>
+                <span class="option-check">✓</span>
+              </div>
+              <div class="dropdown-option" data-value="C">
+                <span class="option-text">Exports Only</span>
+                <span class="option-check">✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end .red-box -->
+
+      <!-- MIDDLE SECTION: purple + teal on left, black on right -->
+      <div class="middle-layout">
+        <div class="middle-left">
+          <!-- PURPLE: scorecards -->
+          <div class="purple-box">
+            <div class="scorecard-item">
+              <div class="scorecard-header">
+                <div class="scorecard-icon">S1</div>
+                <div class="scorecard-content">
+                  <div class="scorecard-label">Total Revenue</div>
+                  <div class="scorecard-value">Value 1</div>
+                </div>
+                <div class="scorecard-action">A1</div>
+              </div>
+            </div>
+
+            <div class="scorecard-item">
+              <div class="scorecard-header">
+                <div class="scorecard-icon">S2</div>
+                <div class="scorecard-content">
+                  <div class="scorecard-label">Export Volume</div>
+                  <div class="scorecard-value">Value 2</div>
+                </div>
+                <div class="scorecard-action">A2</div>
+              </div>
+            </div>
+
+            <div class="scorecard-item">
+              <div class="scorecard-header">
+                <div class="scorecard-icon">S3</div>
+                <div class="scorecard-content">
+                  <div class="scorecard-label">Import Volume</div>
+                  <div class="scorecard-value">Value 3</div>
+                </div>
+                <div class="scorecard-action">A3</div>
+              </div>
+            </div>
+
+            <div class="scorecard-item">
+              <div class="scorecard-header">
+                <div class="scorecard-icon">S4</div>
+                <div class="scorecard-content">
+                  <div class="scorecard-label">Active Routes</div>
+                  <div class="scorecard-value">Value 4</div>
+                </div>
+                <div class="scorecard-action">A4</div>
+              </div>
+            </div>
+          </div>
+          <!-- end .purple-box -->
+
+          <!-- TEAL: charts -->
+          <div class="teal-box">
+            <!-- line chart card -->
+            <div class="graph-item">
+              <div class="graph-header">
+                <div class="graph-icon">L</div>
+                <div class="graph-header-text">
+                  <div class="graph-title">Revenue Trends</div>
+                  <div class="graph-subtitle">Monthly comparison</div>
+                </div>
+              </div>
+
+              <div class="graph-body">
+                <div class="chart-placeholder chart-placeholder--line"></div>
+              </div>
+            </div>
+
+            <!-- bar chart card -->
+            <div class="graph-item">
+              <div class="graph-header">
+                <div class="graph-icon">B</div>
+                <div class="graph-header-text">
+                  <div class="graph-title">Trade Volume</div>
+                  <div class="graph-subtitle">Shipments per month</div>
+                </div>
+              </div>
+
+              <div class="graph-body">
+                <div class="chart-placeholder chart-placeholder--bar">
+                  <div class="bar" style="height: 40%"></div>
+                  <div class="bar" style="height: 65%"></div>
+                  <div class="bar" style="height: 55%"></div>
+                  <div class="bar" style="height: 80%"></div>
+                  <div class="bar" style="height: 70%"></div>
+                  <div class="bar" style="height: 90%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end .teal-box -->
+        </div>
+
+        <!-- RIGHT COLUMN: black-box -->
+        <div class="middle-right">
+          <div class="black-box">
+            <div class="shipments-header">
+              <div class="shipments-icon">📦</div>
+              <div class="shipments-header-text">
+                <div class="shipments-title">Recent Shipments</div>
+                <div class="shipments-subtitle">Latest trade activities</div>
+              </div>
+            </div>
+
+            <div class="shipments-list">
+              <!-- 1 -->
+              <div class="shipment-row">
+                <div class="shipment-main">
+                  <div class="shipment-top">
+                    <div class="shipment-top-left">
+                      <span class="shipment-code">SH-2025-0145</span>
+                      <span class="shipment-tag shipment-tag--export"
+                        >Export</span
+                      >
+                    </div>
+                    <div class="shipment-status-pill status--in-transit">
+                      In Transit
+                    </div>
+                  </div>
+
+                  <div class="shipment-title">Electronics</div>
+
+                  <div class="shipment-meta">
+                    <span class="shipment-location">📍 Shanghai, China</span>
+                    <span class="shipment-time">⏱ 2 days</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2 -->
+              <div class="shipment-row">
+                <div class="shipment-main">
+                  <div class="shipment-top">
+                    <div class="shipment-top-left">
+                      <span class="shipment-code">SH-2025-0144</span>
+                      <span class="shipment-tag shipment-tag--import"
+                        >Import</span
+                      >
+                    </div>
+                    <div class="shipment-status-pill status--customs">
+                      Customs
+                    </div>
+                  </div>
+
+                  <div class="shipment-title">Machinery</div>
+
+                  <div class="shipment-meta">
+                    <span class="shipment-location">📍 Hamburg, Germany</span>
+                    <span class="shipment-time">⏱ 5 days</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3 -->
+              <div class="shipment-row">
+                <div class="shipment-main">
+                  <div class="shipment-top">
+                    <div class="shipment-top-left">
+                      <span class="shipment-code">SH-2025-0143</span>
+                      <span class="shipment-tag shipment-tag--export"
+                        >Export</span
+                      >
+                    </div>
+                    <div class="shipment-status-pill status--delivered">
+                      Delivered
+                    </div>
+                  </div>
+
+                  <div class="shipment-title">Textiles</div>
+
+                  <div class="shipment-meta">
+                    <span class="shipment-location">📍 Los Angeles, USA</span>
+                    <span class="shipment-time">⏱ Completed</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4 -->
+
+              <div class="shipment-row">
+                <div class="shipment-main">
+                  <div class="shipment-top">
+                    <div class="shipment-top-left">
+                      <span class="shipment-code">SH-2025-0141</span>
+                      <span class="shipment-tag shipment-tag--export"
+                        >Export</span
+                      >
+                    </div>
+                    <div class="shipment-status-pill status--processing">
+                      Processing
+                    </div>
+                  </div>
+
+                  <div class="shipment-title">Automotive Parts</div>
+
+                  <div class="shipment-meta">
+                    <span class="shipment-location">📍 Sydney, Australia</span>
+                    <span class="shipment-time">⏱ 10 days</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- end .middle-layout -->
+
+      <!-- PINK SECTION: map + top products -->
+      <div class="pink-box">
+        <!-- left: map card -->
+        <div class="map-card">
+          <div class="map-header">
+            <div class="map-icon">🌍</div>
+            <div class="map-content">
+              <div class="map-label">Global Trade</div>
+              <div class="map-subtitle">Trades by country</div>
+            </div>
+          </div>
+
+          <div class="map-body">
+            <!-- SVG injected here -->
+            <div class="map-tooltip" id="map-tooltip"></div>
+          </div>
+        </div>
+
+        <!-- right: table card -->
+        <div class="products-card">
+          <div class="products-header">
+            <div class="products-icon">📦</div>
+            <div class="products-content">
+              <div class="products-label">Top Products</div>
+              <div class="products-subtitle">Best performing categories</div>
+            </div>
+          </div>
+
+          <div class="products-list">
+            <div class="product-row">
+              <div class="product-left">
+                <div class="product-rank">1</div>
+                <div class="product-text">
+                  <div class="product-name">Electronics & Components</div>
+                  <div class="product-sub">1245 shipments</div>
+                </div>
+              </div>
+              <div class="product-right">
+                <div class="product-value">$2.4M</div>
+                <div class="product-change positive">+15.2%</div>
+              </div>
+            </div>
+
+            <div class="product-row">
+              <div class="product-left">
+                <div class="product-rank">2</div>
+                <div class="product-text">
+                  <div class="product-name">Textiles & Apparel</div>
+                  <div class="product-sub">982 shipments</div>
+                </div>
+              </div>
+              <div class="product-right">
+                <div class="product-value">$1.8M</div>
+                <div class="product-change positive">+8.7%</div>
+              </div>
+            </div>
+
+            <!-- add more rows as you like -->
+          </div>
+        </div>
+      </div>
+      <!-- end .pink-box -->
+    </div>
+    <!-- end .page -->
+
+    <script src="dropdowns.js"></script>
+    <script src="maps.js"></script>
+  </body>
+</html>
