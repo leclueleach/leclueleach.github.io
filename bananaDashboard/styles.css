@@ -521,7 +521,7 @@ body {
 
 .graph-body canvas {
   width: 100% !important;
-  height: 75% !important;
+  height: 60% !important;
   display: block;
 }
 
@@ -822,6 +822,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
