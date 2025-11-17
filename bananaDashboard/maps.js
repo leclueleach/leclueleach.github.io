@@ -162,88 +162,106 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
         // 3) Colour countries + tooltips
-    const paths = svg.querySelectorAll("path");
+const paths = svg.querySelectorAll("path");
 
-    paths.forEach((path) => {
-      // Base style
-      path.classList.add("country");
-      path.classList.remove("low", "medium", "high", "zero");
+paths.forEach((path) => {
+  // Base style
+  path.classList.add("country");
+  path.classList.remove("low", "medium", "high", "zero");
 
-      // 1) Prefer id (e.g. IN, BR, ZA)
-      let rawCode = (path.id || "").trim();
+  // 1) Prefer id (e.g. IN, BR, ZA)
+  let rawCode = (path.id || "").trim();
 
-      // 2) If no id, fall back to class → ISO mapping
-      if (!rawCode) {
-        const clsAttr = (path.getAttribute("class") || "").trim();
-        if (clsAttr) {
-          const classes = clsAttr.split(/\s+/);
-          for (const cls of classes) {
-            if (svgClassToIso[cls]) {
-              rawCode = svgClassToIso[cls];
-              break;
-            }
-          }
+  // 2) If no id, fall back to class → ISO mapping
+  if (!rawCode) {
+    const clsAttr = (path.getAttribute("class") || "").trim();
+    if (clsAttr) {
+      const classes = clsAttr.split(/\s+/);
+      for (const cls of classes) {
+        if (svgClassToIso[cls]) {
+          rawCode = svgClassToIso[cls];
+          break;
         }
       }
+    }
+  }
 
-      // Still nothing? just draw outline, no data/tooltip
-      if (!rawCode) {
-        path.classList.add("low");
-        return;
-      }
+  // 3) If still nothing, fall back to the SVG `name` attribute
+  if (!rawCode) {
+    const nameAttr = (path.getAttribute("name") || "").trim();
+    if (nameAttr && countryNameToIso[nameAttr]) {
+      rawCode = countryNameToIso[nameAttr]; // e.g. "Germany" → "DE"
+    }
+  }
 
-      const code = rawCode.toUpperCase();
-      const info = tradeData[code];
+  // Still nothing? just draw outline, no colour class, no tooltip
+  if (!rawCode) {
+    return;
+  }
 
-      // Debug: see what happens for each path
-      console.debug("[Map] path", code, info);
+  const code = rawCode.toUpperCase();
+  const info = tradeData[code];
 
-      // If we have no info or 0 shipments, mark as "zero" and skip tooltip
-      if (!info || !info.shipments || !maxShipments) {
-        path.classList.add("zero");
-        return;
-      }
+  // No data for this code → again, just outline + no tooltip
+  if (!info) {
+    return;
+  }
 
-      // We have real data → colour by intensity
-      const share = info.shipments / maxShipments;
-      let intensity = "low";
+  const pct = info.pct || 0;
+  let intensityClass = "zero";
 
-      if (share >= 0.6) {
-        intensity = "high";
-      } else if (share >= 0.3) {
-        intensity = "medium";
-      }
+  // Your rules:
+  // 50%+   → high (green)
+  // 25–49% → medium (blue)
+  // 1–24%  → low (pink)
+  // 0%     → zero (white)
+  if (pct >= 50) {
+    intensityClass = "high";
+  } else if (pct >= 25) {
+    intensityClass = "medium";
+  } else if (pct >= 1) {
+    intensityClass = "low";
+  } else {
+    intensityClass = "zero";
+  }
 
-      path.classList.add(intensity);
+  path.classList.add(intensityClass);
 
-      // ✅ Only attach tooltip for countries with real data
-      path.addEventListener("mousemove", (evt) => {
-        const { name, pct, shipments, exports, imports } = info;
+  // If pct is 0, we’ll still colour it "zero" but skip tooltip
+  if (pct === 0) {
+    return;
+  }
 
-        tooltip.innerHTML = `
-          <div style="font-weight:600;margin-bottom:2px;">${name}</div>
-          <div>${pct}% of trade volume</div>
-          <div>${shipments.toLocaleString()} shipments</div>
-          <div>${exports.toLocaleString()} exports</div>
-          <div>${imports.toLocaleString()} imports</div>
-        `;
+  // ✅ Only attach tooltip for countries with real (>0%) trade share
+  path.addEventListener("mousemove", (evt) => {
+    const { name, shipments, exports, imports } = info;
 
-        const rect = mapBody.getBoundingClientRect();
-        const x = evt.clientX - rect.left;
-        const y = evt.clientY - rect.top;
+    tooltip.innerHTML = `
+      <div style="font-weight:600;margin-bottom:2px;">${name}</div>
+      <div>${pct}% of trade volume</div>
+      <div>${shipments.toLocaleString()} shipments</div>
+      <div>${exports.toLocaleString()} exports</div>
+      <div>${imports.toLocaleString()} imports</div>
+    `;
 
-        tooltip.style.left = x + "px";
-        tooltip.style.top = y + "px";
-        tooltip.style.opacity = "1";
-      });
+    const rect = mapBody.getBoundingClientRect();
+    const x = evt.clientX - rect.left;
+    const y = evt.clientY - rect.top;
 
-      path.addEventListener("mouseleave", () => {
-        tooltip.style.opacity = "0";
-      });
-    });
+    tooltip.style.left = x + "px";
+    tooltip.style.top = y + "px";
+    tooltip.style.opacity = "1";
+  });
+
+  path.addEventListener("mouseleave", () => {
+    tooltip.style.opacity = "0";
+  });
+});
+
 
   } catch (err) {
     console.error("Error loading map:", err);
   }
 });
+
 
