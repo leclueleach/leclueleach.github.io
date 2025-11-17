@@ -196,13 +196,16 @@ if (!maxShipments) {
 
       // We have real data → colour by intensity
       const share = info.shipments / maxShipments;
-      let intensity = "low";
-      if (share >= 0.6) {
-        intensity = "high";
-      } else if (share >= 0.3) {
-        intensity = "medium";
-      }
-      path.classList.add(intensity);
+let intensity = "low";
+
+if (share >= 0.6) {
+  intensity = "high";
+} else if (share >= 0.3) {
+  intensity = "medium";
+}
+
+path.classList.add(intensity);
+
 
       // ✅ Only attach tooltip for countries with real data
       path.addEventListener("mousemove", (evt) => {
@@ -233,6 +236,7 @@ if (!maxShipments) {
     console.error("Error loading map:", err);
   }
 });
+
 
 
 
