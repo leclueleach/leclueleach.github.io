@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     Canada: "CA",
     China: "CN",
     Australia: "AU",
-    Germany: "DE",
+    // Germany: "DE",
     // Add more if your SVG uses names instead of ids
     // "United Kingdom": "GB",
     // "South Korea": "KR",
@@ -232,5 +232,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Error loading map:", err);
   }
 });
+
 
 
