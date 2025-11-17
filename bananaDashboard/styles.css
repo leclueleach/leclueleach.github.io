@@ -773,7 +773,7 @@ body {
 
 /* Intensity levels (trade volume) */
 .country.low {
-  fill: #FFC0CB; /* very dark */
+  fill: #0f172a; /* very dark */
 }
 
 .country.medium {
@@ -823,6 +823,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
