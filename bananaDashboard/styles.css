@@ -799,9 +799,9 @@ body {
 } */
 
 /* Hover effect (on top of intensity) */
-.country:hover {
+/* .country:hover {
   fill: blue;
-}
+} */
 
 .map-body {
   /* background-color: var(--bg); */
@@ -823,60 +823,9 @@ body {
   border-radius: 6px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
   opacity: 0;
-  transform: translate(-5%, -14%); /* center horizontally, sit above cursor */
+  transform: translate(5%, 14%); /* center horizontally, sit above cursor */
   white-space: nowrap;
   z-index: 20;
   border: 1px solid #94a3b880;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
