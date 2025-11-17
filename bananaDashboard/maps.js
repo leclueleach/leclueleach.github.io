@@ -1,4 +1,5 @@
-// maps.js
+// maps.js – Global Trade map powered by Supabase
+
 document.addEventListener("DOMContentLoaded", async () => {
   const mapBody = document.querySelector(".map-body");
   const tooltip = document.getElementById("map-tooltip");
@@ -14,6 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const svgMarkup = await resp.text();
+
     const wrapper = document.createElement("div");
     wrapper.innerHTML = svgMarkup.trim();
 
@@ -29,120 +31,143 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Insert SVG before the tooltip inside .map-body
     mapBody.insertBefore(svg, tooltip);
 
-    // 2) Dummy trade data (keys must match your SVG's path ids, e.g. US, ZA, CN...)
-    const tradeData = {
-      US: {
-        name: "United States",
-        pct: 28,
-        shipments: 3200,
-        exports: 1900,
-        imports: 1300,
-      },
-      CA: {
-        name: "Canada",
-        pct: 9,
-        shipments: 1100,
-        exports: 600,
-        imports: 500,
-      },
-      BR: {
-        name: "Brazil",
-        pct: 6,
-        shipments: 800,
-        exports: 500,
-        imports: 300,
-      },
-      ZA: {
-        name: "South Africa",
-        pct: 4,
-        shipments: 500,
-        exports: 320,
-        imports: 180,
-      },
-      CN: {
-        name: "China",
-        pct: 22,
-        shipments: 2800,
-        exports: 2200,
-        imports: 600,
-      },
-      IN: {
-        name: "India",
-        pct: 11,
-        shipments: 1500,
-        exports: 900,
-        imports: 600,
-      },
-      AU: {
-        name: "Australia",
-        pct: 5,
-        shipments: 600,
-        exports: 350,
-        imports: 250,
-      },
-      // add more as you map your SVG ids...
-    };
+    // 2) Build trade data from Supabase
+    let tradeData = {};
+    let maxShipments = 0;
 
-    // Helper: decide intensity from % of trade volume
-    function getIntensityClass(pct) {
-      if (pct >= 20) return "high";
-      if (pct >= 8) return "medium";
-      if (pct > 0) return "low";
-      return "";
+    try {
+      const supabaseClient = window.supabaseClient;
+      if (!supabaseClient) {
+        console.warn("supabaseClient not found on window; using empty map data.");
+      } else {
+        const { data, error } = await supabaseClient
+          .from("vw_shipment_item_enriched")
+          .select(
+            "shipment_id, trade_type_code, destination_iso, destination_country"
+          );
+
+        if (error) {
+          throw error;
+        }
+
+        const tmp = {};
+
+        (data || []).forEach((row) => {
+          const isoRaw = row.destination_iso;
+          if (!isoRaw) return;
+
+          const iso = String(isoRaw).toUpperCase();
+          if (!tmp[iso]) {
+            tmp[iso] = {
+              name: row.destination_country || iso,
+              shipmentsSet: new Set(),
+              exports: 0,
+              imports: 0,
+            };
+          }
+
+          const entry = tmp[iso];
+          entry.shipmentsSet.add(row.shipment_id);
+
+          if (row.trade_type_code === "EXPORT") {
+            entry.exports += 1;
+          } else if (row.trade_type_code === "IMPORT") {
+            entry.imports += 1;
+          }
+        });
+
+        let totalShipments = 0;
+
+        Object.keys(tmp).forEach((iso) => {
+          const entry = tmp[iso];
+          const shipmentsCount = entry.shipmentsSet.size;
+          entry.shipments = shipmentsCount;
+          delete entry.shipmentsSet;
+          totalShipments += shipmentsCount;
+          if (shipmentsCount > maxShipments) {
+            maxShipments = shipmentsCount;
+          }
+        });
+
+        tradeData = {};
+        Object.keys(tmp).forEach((iso) => {
+          const entry = tmp[iso];
+          const pct =
+            totalShipments > 0
+              ? Math.round((entry.shipments * 100) / totalShipments)
+              : 0;
+          tradeData[iso] = {
+            name: entry.name,
+            pct,
+            shipments: entry.shipments,
+            exports: entry.exports,
+            imports: entry.imports,
+          };
+        });
+      }
+    } catch (err) {
+      console.error("Error building trade data for map:", err);
+      tradeData = {};
+      maxShipments = 0;
     }
 
-    const paths = svg.querySelectorAll("path");
+    // 3) Colour countries + tooltips
+    const paths = svg.querySelectorAll("path[id]");
 
     paths.forEach((path) => {
-      // Make sure the base map style applies
+      const code = String(path.id || "").toUpperCase();
+      const info = tradeData[code];
+
+      // ensure base class
       path.classList.add("country");
+      path.classList.remove("low", "medium", "high");
 
-      const rawId = (path.id || "").trim();
-      if (!rawId) {
-        // No id → we can't attach data
-        return;
+      if (!info || !maxShipments) {
+        // no data for this country – keep it very dark
+        path.classList.add("low");
+      } else {
+        const share = info.shipments / maxShipments;
+        let intensity = "low";
+        if (share >= 0.6) {
+          intensity = "high";
+        } else if (share >= 0.3) {
+          intensity = "medium";
+        }
+        path.classList.add(intensity);
       }
 
-      const iso = rawId.toUpperCase();
-      const data = tradeData[iso];
-
-      // No data → no colouring, no tooltip, just base map
-      if (!data) return;
-
-      const { name, pct, shipments, exports, imports } = data;
-
-      // Intensity class
-      const intensityClass = getIntensityClass(pct);
-      if (intensityClass) {
-        path.classList.add(intensityClass);
-      }
-
-      // Tooltip + hover behaviour ONLY for countries with data
+      // Hover tooltip
       path.addEventListener("mousemove", (evt) => {
-        // build tooltip HTML
+        const details = info || {
+          name: code || "Unknown",
+          pct: 0,
+          shipments: 0,
+          exports: 0,
+          imports: 0,
+        };
+
+        const { name, pct, shipments, exports, imports } = details;
+
         tooltip.innerHTML = `
-          <div><strong>${name}</strong></div>
+          <div style="font-weight:600;margin-bottom:2px;">${name}</div>
           <div>${pct}% of trade volume</div>
           <div>${shipments.toLocaleString()} shipments</div>
           <div>${exports.toLocaleString()} exports</div>
           <div>${imports.toLocaleString()} imports</div>
         `;
 
-        // position tooltip relative to the .map-body
         const rect = mapBody.getBoundingClientRect();
         const x = evt.clientX - rect.left;
         const y = evt.clientY - rect.top;
 
-        tooltip.style.left = `${x}px`;
-        tooltip.style.top = `${y}px`;
+        tooltip.style.left = x + "px";
+        tooltip.style.top = y + "px";
         tooltip.style.opacity = "1";
       });
 
       path.addEventListener("mouseleave", () => {
         tooltip.style.opacity = "0";
       });
-
-      // ❌ No click handler anymore (no selection)
     });
   } catch (err) {
     console.error("Error loading map:", err);
