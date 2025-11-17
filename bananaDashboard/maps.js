@@ -12,9 +12,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     Canada: "CA",
     China: "CN",
     Australia: "AU",
-    // Add more if needed, e.g.:
+    // Add more if your SVG uses names instead of ids
     // "United Kingdom": "GB",
     // "South Korea": "KR",
+  };
+
+  // Fallback: map destination_country → ISO
+  const countryNameToIso = {
+    "South Africa": "ZA",
+    "United States": "US",
+    Canada: "CA",
+    China: "CN",
+    India: "IN",
+    Germany: "DE",
+    Brazil: "BR",
+    Australia: "AU",
+    "United Kingdom": "GB",
+    Japan: "JP",
+    // add/remove to match the countries in your data
   };
 
   try {
@@ -64,10 +79,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         const tmp = {};
 
         (data || []).forEach((row) => {
-          const isoRaw = row.destination_iso;
+          // Try ISO code first
+          let isoRaw = row.destination_iso;
+
+          // If missing / null, fall back to country name
+          if (!isoRaw && row.destination_country) {
+            const mappedIso = countryNameToIso[row.destination_country];
+            if (mappedIso) {
+              isoRaw = mappedIso;
+            }
+          }
+
+          // Still nothing? skip this row for the map
           if (!isoRaw) return;
 
           const iso = String(isoRaw).toUpperCase();
+
           if (!tmp[iso]) {
             tmp[iso] = {
               name: row.destination_country || iso,
@@ -150,7 +177,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Still nothing? we can't attach data to this shape
       if (!rawCode) {
-        // You can early-return for this path, but don't stop the whole map
         return;
       }
 
