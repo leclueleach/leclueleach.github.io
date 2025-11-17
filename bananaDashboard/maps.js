@@ -22,10 +22,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const countryNameToIso = {
     "South Africa": "ZA",
     China: "CN",
+    Germany: "DE",
     // Add more if destination_iso is null for those rows, e.g.:
     // "United States": "US",
     // Canada: "CA",
-    Germany: "DE",
     // "United Kingdom": "GB",
     // ...
   };
@@ -82,7 +82,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           // If missing / null, fall back to country name
           if (!isoRaw && row.destination_country) {
-            const mappedIso = countryNameToIso[row.destination_country.trim()];
+            const name = row.destination_country.trim();
+            const mappedIso = countryNameToIso[name];
             if (mappedIso) {
               isoRaw = mappedIso;
             } else {
@@ -146,6 +147,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             imports: entry.imports,
           };
         });
+
+        console.log(
+          "[Map] tradeData countries:",
+          Object.keys(tradeData),
+          "maxShipments:",
+          maxShipments
+        );
       }
     } catch (err) {
       console.error("Error building trade data for map:", err);
@@ -159,7 +167,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     paths.forEach((path) => {
       // Base style
       path.classList.add("country");
-      path.classList.remove("low", "medium", "high");
+      path.classList.remove("low", "medium", "high", "zero");
 
       // 1) Prefer id (e.g. IN, BR, ZA)
       let rawCode = (path.id || "").trim();
@@ -178,7 +186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
 
-      // Still nothing? just draw the outline, no data
+      // Still nothing? just draw the outline, no data / tooltip
       if (!rawCode) {
         path.classList.add("low");
         return;
@@ -186,31 +194,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const code = rawCode.toUpperCase();
       const info = tradeData[code];
-      
-// NEW: If no shipments for this country, use "zero"
-if (!info || info.shipments === 0) {
-  path.classList.add("zero");
-  return;
-}
-     
-// If maxShipments is 0 (edge case), also treat as zero
-if (!maxShipments) {
-  path.classList.add("zero");
-  return;
-}
+
+      // If we have no info or 0 shipments, mark as "zero" and skip tooltip
+      if (!info || !info.shipments || !maxShipments) {
+        path.classList.add("zero");
+        return;
+      }
 
       // We have real data → colour by intensity
       const share = info.shipments / maxShipments;
-let intensity = "low";
+      let intensity = "low";
 
-if (share >= 0.6) {
-  intensity = "high";
-} else if (share >= 0.3) {
-  intensity = "medium";
-}
+      if (share >= 0.6) {
+        intensity = "high";
+      } else if (share >= 0.3) {
+        intensity = "medium";
+      }
 
-path.classList.add(intensity);
-
+      path.classList.add(intensity);
 
       // ✅ Only attach tooltip for countries with real data
       path.addEventListener("mousemove", (evt) => {
@@ -241,10 +242,3 @@ path.classList.add(intensity);
     console.error("Error loading map:", err);
   }
 });
-
-
-
-
-
-
-
