@@ -187,11 +187,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       const code = rawCode.toUpperCase();
       const info = tradeData[code];
 
-      // ⛔ No data for this country → keep dark, NO tooltip handlers
-      if (!info || !info.shipments || !maxShipments) {
-        path.classList.add("low");
-        return;
-      }
+     
+// If maxShipments is 0 (edge case), also treat as zero
+if (!maxShipments) {
+  path.classList.add("zero");
+  return;
+}
 
       // We have real data → colour by intensity
       const share = info.shipments / maxShipments;
@@ -232,6 +233,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Error loading map:", err);
   }
 });
+
 
 
 
