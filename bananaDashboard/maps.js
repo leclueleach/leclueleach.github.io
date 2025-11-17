@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       maxShipments = 0;
     }
 
-    // 3) Colour countries + tooltips
+        // 3) Colour countries + tooltips
     const paths = svg.querySelectorAll("path");
 
     paths.forEach((path) => {
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
 
-      // Still nothing? just draw the outline, no data / tooltip
+      // Still nothing? just draw outline, no data/tooltip
       if (!rawCode) {
         path.classList.add("low");
         return;
@@ -194,6 +194,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const code = rawCode.toUpperCase();
       const info = tradeData[code];
+
+      // Debug: see what happens for each path
+      console.debug("[Map] path", code, info);
 
       // If we have no info or 0 shipments, mark as "zero" and skip tooltip
       if (!info || !info.shipments || !maxShipments) {
@@ -238,7 +241,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         tooltip.style.opacity = "0";
       });
     });
+
   } catch (err) {
     console.error("Error loading map:", err);
   }
 });
+
