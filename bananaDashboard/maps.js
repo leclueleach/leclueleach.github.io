@@ -186,7 +186,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const code = rawCode.toUpperCase();
       const info = tradeData[code];
-
+      
+// NEW: If no shipments for this country, use "zero"
+if (!info || info.shipments === 0) {
+  path.classList.add("zero");
+  return;
+}
      
 // If maxShipments is 0 (edge case), also treat as zero
 if (!maxShipments) {
@@ -236,6 +241,7 @@ path.classList.add(intensity);
     console.error("Error loading map:", err);
   }
 });
+
 
 
 
