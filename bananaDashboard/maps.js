@@ -6,6 +6,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (!mapBody || !tooltip) return;
 
+  // Map SVG class names → ISO codes for paths that don't have an id
+  const svgClassToIso = {
+    "United States": "US",
+    Canada: "CA",
+    China: "CN",
+    Australia: "AU",
+    // Add more if needed, e.g.:
+    // "United Kingdom": "GB",
+    // "South Korea": "KR",
+  };
+
   try {
     // 1) Load SVG from map.html
     const resp = await fetch("map.html");
@@ -112,18 +123,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // 3) Colour countries + tooltips
-    const paths = svg.querySelectorAll("path[id]");
+    // Use ALL paths, not only [id], since some use class only
+    const paths = svg.querySelectorAll("path");
 
     paths.forEach((path) => {
-      const code = String(path.id || "").toUpperCase();
-      const info = tradeData[code];
-
-      // ensure base class
+      // Make sure the base map style applies
       path.classList.add("country");
       path.classList.remove("low", "medium", "high");
 
+      // 1) Prefer id (e.g. IN, BR, ZA)
+      let rawCode = (path.id || "").trim();
+
+      // 2) If no id, fall back to class → ISO mapping
+      if (!rawCode) {
+        const clsAttr = (path.getAttribute("class") || "").trim();
+        if (clsAttr) {
+          const classes = clsAttr.split(/\s+/);
+          for (const cls of classes) {
+            if (svgClassToIso[cls]) {
+              rawCode = svgClassToIso[cls];
+              break;
+            }
+          }
+        }
+      }
+
+      // Still nothing? we can't attach data to this shape
+      if (!rawCode) {
+        // You can early-return for this path, but don't stop the whole map
+        return;
+      }
+
+      const code = rawCode.toUpperCase();
+      const info = tradeData[code];
+
+      // No data or no shipments at all → keep very dark
       if (!info || !maxShipments) {
-        // no data for this country – keep it very dark
         path.classList.add("low");
       } else {
         const share = info.shipments / maxShipments;
