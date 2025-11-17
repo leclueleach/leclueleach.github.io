@@ -771,6 +771,13 @@ body {
   /* filter: drop-shadow(0 0 4px rgba(15, 23, 42, 0.8)); */
 }
 
+.country.zero {
+  fill: #1e293b !important;   /* dark slate */
+  stroke: blue;               /* keep your border */
+  opacity: 0.5;               /* subtle dim effect */
+}
+
+
 /* Intensity levels (trade volume) */
 .country.low {
   fill: #0f172a; /* very dark */
@@ -823,6 +830,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
