@@ -761,37 +761,35 @@ body {
   height: auto;
 }
 
-/* Base country style */
+/* Base country */
 .country {
-  fill: var(--bg);
-  stroke: blue; /* border colour */
-  stroke-width: 2; /* thicker outline than .2 */
-  transition: fill 0.2s ease, stroke 0.2s ease, filter 0.2s ease;
-  /* subtle global glow */
-  /* filter: drop-shadow(0 0 4px rgba(15, 23, 42, 0.8)); */
+  fill: var(--bg);   /* your dark background */
+  stroke: blue;
+  stroke-width: 2;
 }
 
-.country.zero {
-  fill: #1e293b !important;   /* dark slate */
-  stroke: blue;               /* keep your border */
-  opacity: 0.5;               /* subtle dim effect */
-}
-
-
-/* Intensity levels (trade volume) */
-.country.low {
-  fill: #fff; /* very dark */
-}
-
-.country.medium {
-  fill: #2563eb; /* blue */
-  /* filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.7)); */
-}
-
+/* 50%+ of trade volume */
 .country.high {
-  fill: #22c55e; /* bright green */
+  fill: #22c55e; /* green */
   filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.9));
 }
+
+/* 25–49% */
+.country.medium {
+  fill: #3b82f6; /* blue */
+}
+
+/* 1–24% */
+.country.low {
+  fill: #ec4899; /* pink */
+}
+
+/* 0% (but mapped country) */
+.country.zero {
+  fill: #ffffff;  /* white */
+  stroke: blue;
+}
+
 
 /* Selected country (click) – stronger stroke + glow */
 /* .country.selected {
@@ -830,6 +828,7 @@ body {
   z-index: 20;
   border: 1px solid #94a3b880;
 }
+
 
 
 
