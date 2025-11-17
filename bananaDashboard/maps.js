@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Add more if destination_iso is null for those rows, e.g.:
     // "United States": "US",
     // Canada: "CA",
-    // Germany: "DE",
+    Germany: "DE",
     // "United Kingdom": "GB",
     // ...
   };
@@ -232,4 +232,5 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("Error loading map:", err);
   }
 });
+
 
