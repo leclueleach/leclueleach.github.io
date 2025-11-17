@@ -20,16 +20,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Fallback: map destination_country → ISO
   const countryNameToIso = {
     "South Africa": "ZA",
-    "United States": "US",
-    Canada: "CA",
     China: "CN",
-    India: "IN",
-    Germany: "DE",
-    Brazil: "BR",
-    Australia: "AU",
-    "United Kingdom": "GB",
-    Japan: "JP",
-    // add/remove to match the countries in your data
+    // Add more if destination_iso is null for those rows, e.g.:
+    // "United States": "US",
+    // Canada: "CA",
+    // Germany: "DE",
+    // "United Kingdom": "GB",
+    // ...
   };
 
   try {
@@ -84,9 +81,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           // If missing / null, fall back to country name
           if (!isoRaw && row.destination_country) {
-            const mappedIso = countryNameToIso[row.destination_country];
+            const mappedIso = countryNameToIso[row.destination_country.trim()];
             if (mappedIso) {
               isoRaw = mappedIso;
+            } else {
+              // Helpful debug so you can see which country names aren't mapped yet
+              console.debug(
+                "[Map] No ISO mapping for destination_country:",
+                row.destination_country
+              );
             }
           }
 
@@ -150,11 +153,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // 3) Colour countries + tooltips
-    // Use ALL paths, not only [id], since some use class only
     const paths = svg.querySelectorAll("path");
 
     paths.forEach((path) => {
-      // Make sure the base map style applies
+      // Base style
       path.classList.add("country");
       path.classList.remove("low", "medium", "high");
 
@@ -175,39 +177,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
       }
 
-      // Still nothing? we can't attach data to this shape
+      // Still nothing? just draw the outline, no data
       if (!rawCode) {
+        path.classList.add("low");
         return;
       }
 
       const code = rawCode.toUpperCase();
       const info = tradeData[code];
 
-      // No data or no shipments at all → keep very dark
-      if (!info || !maxShipments) {
+      // ⛔ No data for this country → keep dark, NO tooltip handlers
+      if (!info || !info.shipments || !maxShipments) {
         path.classList.add("low");
-      } else {
-        const share = info.shipments / maxShipments;
-        let intensity = "low";
-        if (share >= 0.6) {
-          intensity = "high";
-        } else if (share >= 0.3) {
-          intensity = "medium";
-        }
-        path.classList.add(intensity);
+        return;
       }
 
-      // Hover tooltip
-      path.addEventListener("mousemove", (evt) => {
-        const details = info || {
-          name: code || "Unknown",
-          pct: 0,
-          shipments: 0,
-          exports: 0,
-          imports: 0,
-        };
+      // We have real data → colour by intensity
+      const share = info.shipments / maxShipments;
+      let intensity = "low";
+      if (share >= 0.6) {
+        intensity = "high";
+      } else if (share >= 0.3) {
+        intensity = "medium";
+      }
+      path.classList.add(intensity);
 
-        const { name, pct, shipments, exports, imports } = details;
+      // ✅ Only attach tooltip for countries with real data
+      path.addEventListener("mousemove", (evt) => {
+        const { name, pct, shipments, exports, imports } = info;
 
         tooltip.innerHTML = `
           <div style="font-weight:600;margin-bottom:2px;">${name}</div>
