@@ -280,13 +280,21 @@
               <div class="demo-card__tags">
                 <span class="p-tag" style="border-color:rgba(167,139,250,0.3);color:#a78bfa;background:rgba(167,139,250,0.06);">Personal</span>
                 <span class="p-tag">HTML / CSS / JS</span>
-                <span class="p-tag">Google Sheets</span>
                 <span class="p-tag">Google Auth</span>
                 <span class="p-tag">Mobile First</span>
               </div>
             </div>
             <div class="demo-card__footer">
-              <span class="demo-card__status demo-card__status--progress">In active development</span>
+              <div>
+                <a href="https://leclueleach.github.io/meal-planner-demo/"
+                   class="demo-card__launch launch-demo"
+                   data-demo="meal-planner"
+                   data-url="https://leclueleach.github.io/meal-planner-demo/"
+                   target="_blank" rel="noopener noreferrer">
+                  Launch Demo ↗
+                </a>
+                <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.25);margin-top:6px;font-style:italic;">Personal project · Live</p>
+              </div>
             </div>
           </div>
 
@@ -362,8 +370,8 @@
       document.querySelectorAll('.reveal:not(.visible)').forEach(el => el.classList.add('visible'));
     }, 1000);
 
-    /* ── HAMBURGER MENU ─────────────────────────────────── */
-    const hamburger = document.querySelector('.nav__hamburger');
+    /* ── HAMBURGER MENU ───
+const hamburger = document.querySelector('.nav__hamburger');
     const overlay   = document.querySelector('.nav__overlay');
 
     if (hamburger && overlay) {
