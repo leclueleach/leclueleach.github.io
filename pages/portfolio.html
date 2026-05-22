@@ -72,13 +72,13 @@
     ══════════════════════════════════════════════════════ -->
     <div class="portfolio-section">
       <div class="portfolio-section__inner">
-        <div class="portfolio-section__eyebrow reveal">Dashboards</div>
-        <h2 class="portfolio-section__title reveal">Data visualisation &amp; reporting</h2>
+        <div class="portfolio-section__eyebrow">Dashboards</div>
+        <h2 class="portfolio-section__title">Data visualisation &amp; reporting</h2>
 
         <div class="portfolio-grid">
 
           <!-- Vaultic — real -->
-          <div class="demo-card reveal">
+          <div class="demo-card">
             <div class="demo-card__thumb">
               <img src="../assets/img/vaultic-thumb.png" alt="Vaultic SaaS Executive Dashboard" loading="lazy">
             </div>
@@ -106,7 +106,7 @@
           </div>
 
           <!-- Placeholder — Operations Analytics -->
-          <div class="demo-card demo-card--placeholder reveal">
+          <div class="demo-card demo-card--placeholder">
             <div class="demo-card__thumb">
               <div class="demo-card__thumb-placeholder">
                 <div class="demo-card__thumb-icon">📊</div>
@@ -136,13 +136,13 @@
     ══════════════════════════════════════════════════════ -->
     <div class="portfolio-section">
       <div class="portfolio-section__inner">
-        <div class="portfolio-section__eyebrow rust reveal">Automation</div>
-        <h2 class="portfolio-section__title reveal">Workflows &amp; pipelines</h2>
+        <div class="portfolio-section__eyebrow rust">Automation</div>
+        <h2 class="portfolio-section__title">Workflows &amp; pipelines</h2>
 
         <div class="portfolio-grid">
 
           <!-- LC Project Progress — real -->
-          <div class="demo-card reveal">
+          <div class="demo-card">
             <div class="demo-card__thumb" id="projectThumb" style="cursor:pointer;" onclick="openVideoPlayer()">
               <img src="../assets/img/LC_Project_Progress_Thumb.png" alt="LC Project Progress Tracker" loading="lazy">
               <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
@@ -198,7 +198,7 @@
             <!-- Dots -->
             <div id="carouselDots" style="display:flex;gap:10px;"></div>
           </div>
-          <div class="demo-card demo-card--placeholder reveal">
+          <div class="demo-card demo-card--placeholder">
             <div class="demo-card__thumb">
               <div class="demo-card__thumb-placeholder">
                 <div class="demo-card__thumb-icon">🎫</div>
@@ -221,7 +221,7 @@
           </div>
 
           <!-- Placeholder — Coupon Portal -->
-          <div class="demo-card demo-card--placeholder reveal">
+          <div class="demo-card demo-card--placeholder">
             <div class="demo-card__thumb">
               <div class="demo-card__thumb-placeholder">
                 <div class="demo-card__thumb-icon">🎟️</div>
@@ -251,13 +251,13 @@
     ══════════════════════════════════════════════════════ -->
     <div class="portfolio-section">
       <div class="portfolio-section__inner">
-        <div class="portfolio-section__eyebrow reveal" style="color:#a78bfa;">Personal Projects</div>
-        <h2 class="portfolio-section__title reveal">Built for myself — then kept going</h2>
+        <div class="portfolio-section__eyebrow" style="color:#a78bfa;">Personal Projects</div>
+        <h2 class="portfolio-section__title">Built for myself — then kept going</h2>
 
         <div class="portfolio-grid">
 
           <!-- Meal Planner -->
-          <div class="demo-card reveal">
+          <div class="demo-card">
             <div class="demo-card__thumb meal-gallery" id="mealGallery">
               <div class="meal-gallery__stack">
                 <img class="meal-gallery__img meal-gallery__img--4" src="../assets/img/Meal_Planner_4.jpeg" alt="Meal Planner screenshot 4">
@@ -370,8 +370,8 @@
       document.querySelectorAll('.reveal:not(.visible)').forEach(el => el.classList.add('visible'));
     }, 1000);
 
-    /* ── HAMBURGER MENU ───
-const hamburger = document.querySelector('.nav__hamburger');
+    /* ── HAMBURGER MENU ─────────────────────────────────── */
+    const hamburger = document.querySelector('.nav__hamburger');
     const overlay   = document.querySelector('.nav__overlay');
 
     if (hamburger && overlay) {
