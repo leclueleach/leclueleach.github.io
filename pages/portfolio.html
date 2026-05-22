@@ -185,19 +185,6 @@
             </div>
           </div>
 
-          <!-- Image Carousel Modal -->
-          <div id="carouselModal" style="display:none;position:fixed;inset:0;background:rgba(6,9,20,0.97);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:24px;">
-            <button onclick="closeCarousel()" style="position:absolute;top:20px;right:20px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:32px;cursor:pointer;line-height:1;z-index:10;">&times;</button>
-            <!-- Carousel track -->
-            <div style="position:relative;width:100vw;height:75vh;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-              <div class="fan-modal" id="fanModal"></div>
-              <!-- Arrows -->
-              <button onclick="setFanCenter((mealCurrent+3)%mealImgs.length)" class="carousel-arrow carousel-arrow--left">&#8249;</button>
-              <button onclick="setFanCenter((mealCurrent+1)%mealImgs.length)" class="carousel-arrow carousel-arrow--right">&#8250;</button>
-            </div>
-            <!-- Dots -->
-            <div id="carouselDots" style="display:flex;gap:10px;"></div>
-          </div>
           <div class="demo-card demo-card--placeholder">
             <div class="demo-card__thumb">
               <div class="demo-card__thumb-placeholder">
@@ -258,21 +245,9 @@
 
           <!-- Meal Planner -->
           <div class="demo-card">
-            <div class="demo-card__thumb meal-gallery" id="mealGallery">
-              <div class="meal-gallery__stack">
-                <img class="meal-gallery__img meal-gallery__img--4" src="../assets/img/Meal_Planner_4.jpeg" alt="Meal Planner screenshot 4">
-                <img class="meal-gallery__img meal-gallery__img--2" src="../assets/img/Meal_Planner_2.jpeg" alt="Meal Planner screenshot 2">
-                <img class="meal-gallery__img meal-gallery__img--1 active" src="../assets/img/Meal_Planner_1.jpeg" alt="Meal Planner screenshot 1" id="mealMainImg">
-                <img class="meal-gallery__img meal-gallery__img--3" src="../assets/img/Meal_Planner_3.jpeg" alt="Meal Planner screenshot 3">
-                <img class="meal-gallery__img meal-gallery__img--5" src="../assets/img/Meal_Planner_4.jpeg" alt="Meal Planner screenshot 4">
-              </div>
-              <div class="meal-gallery__dots">
-                <span class="meal-dot active" data-img="0"></span>
-                <span class="meal-dot" data-img="1"></span>
-                <span class="meal-dot" data-img="2"></span>
-                <span class="meal-dot" data-img="3"></span>
-              </div>
-            </div>
+            <a href="https://leclueleach.github.io/meal-planner-demo/" target="_blank" rel="noopener noreferrer" class="demo-card__thumb">
+              <img src="../assets/img/Meal_Planner_1.jpeg" alt="Meal Planner" loading="lazy">
+            </a>
             <div class="demo-card__body">
               <div class="demo-card__category">Personal Project · HTML / CSS / JS</div>
               <h3 class="demo-card__title">Meal Planner</h3>
@@ -410,125 +385,6 @@
     }
     .video-btn:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
     .video-btn.active { background: rgba(20,184,166,0.15); color: #14B8A6; border-color: rgba(20,184,166,0.4); }
-
-    /* ── MEAL PLANNER GALLERY ── */
-    .meal-gallery {
-      position: relative;
-      aspect-ratio: 16/9;
-      background: linear-gradient(135deg, rgba(167,139,250,0.05), rgba(0,0,0,0.3));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      cursor: pointer;
-    }
-
-    .meal-gallery:hover { opacity: 0.9; }
-
-    .meal-gallery__stack {
-      position: relative;
-      width: 42%;
-      height: 80%;
-    }
-
-    .meal-gallery__img {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-    }
-
-    /* Fixed straight line layout — all visible simultaneously */
-    .meal-gallery__img--1 { transform: translateX(-48%) scale(0.65); z-index: 1; opacity: 0.45; }
-    .meal-gallery__img--2 { transform: translateX(-25%) scale(0.82); z-index: 2; opacity: 0.7; }
-    .meal-gallery__img--3 { transform: translateX(0%)   scale(1.08); z-index: 5; opacity: 1.0; }
-    .meal-gallery__img--4 { transform: translateX(25%)  scale(0.82); z-index: 2; opacity: 0.7; }
-    .meal-gallery__img--5 { transform: translateX(48%)  scale(0.65); z-index: 1; opacity: 0.45; }
-
-    /* Click hint */
-    .meal-gallery::after {
-      content: '↗ View all';
-      position: absolute;
-      bottom: 10px;
-      right: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: rgba(167,139,250,0.7);
-      letter-spacing: 0.08em;
-      pointer-events: none;
-    }
-
-    .meal-gallery__dots { display: none; }
-
-    /* Carousel dots */
-    /* Fan modal */
-    .fan-modal {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .fan-img {
-      position: absolute;
-      height: 86%;
-      width: auto;
-      max-width: 34vw;
-      object-fit: contain;
-      border-radius: 20px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.8);
-      cursor: pointer;
-      transition: transform 0.55s cubic-bezier(0.34,1.2,0.64,1),
-                  opacity 0.55s ease,
-                  filter 0.55s ease;
-    }
-
-    .fan-img:not(.fan-centre):hover { filter: brightness(1.15); }
-
-    /* Carousel arrows */
-    .carousel-arrow {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(167,139,250,0.12);
-      border: 1px solid rgba(167,139,250,0.35);
-      color: #a78bfa;
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      font-size: 28px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 20;
-      transition: background 0.2s, transform 0.2s;
-    }
-
-    .carousel-arrow:hover {
-      background: rgba(167,139,250,0.25);
-      transform: translateY(-50%) scale(1.1);
-    }
-
-    .carousel-arrow--left  { left: 20px; }
-    .carousel-arrow--right { right: 20px; }
-
-    /* Carousel dots */
-    .carousel-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.25);
-      cursor: pointer;
-      display: inline-block;
-      transition: background 0.2s, transform 0.2s;
-    }
-    .carousel-dot.active {
-      background: #a78bfa;
-      transform: scale(1.3);
-    }
   </style>
 
   <script>
@@ -563,136 +419,6 @@
 
     document.getElementById('videoModal').addEventListener('click', function(e) {
       if (e.target === this) closeVideoPlayer();
-    });
-
-    // Meal Planner fan carousel
-    const mealImgs = [
-      '../assets/img/Meal_Planner_1.jpeg',
-      '../assets/img/Meal_Planner_2.jpeg',
-      '../assets/img/Meal_Planner_3.jpeg',
-      '../assets/img/Meal_Planner_4.jpeg',
-    ];
-    let mealCurrent = 0;
-
-    // Straight line positions: [translateX%, scale, opacity, zIndex, width, height]
-    const fanPositions = [
-      [-48, 0.65, 0.45, 1, '100%', 'auto'],
-      [-25, 0.82, 0.7,  2, '100%', 'auto'],
-      [0,   1.08, 1.0,  5, '100%', 'auto'],
-      [25,  0.82, 0.7,  2, '100%', 'auto'],
-      [48,  0.65, 0.45, 1, '100%', 'auto'],
-    ];
-
-    // Modal positions: centre large, left/right half-visible
-    const modalPositions = [
-      { tx: '-78%', scale: 0.75, opacity: 0.5,  z: 1 },
-      { tx: '-42%', scale: 0.88, opacity: 0.8,  z: 2 },
-      { tx: '0%',   scale: 1.0,  opacity: 1.0,  z: 5 },
-      { tx: '42%',  scale: 0.88, opacity: 0.8,  z: 2 },
-      { tx: '78%',  scale: 0.75, opacity: 0.5,  z: 1 },
-    ];
-
-    function buildFan(centerIndex, animate) {
-      const container = document.getElementById('fanModal');
-      const total = mealImgs.length;
-
-      const order = [
-        (centerIndex + total - 2) % total,
-        (centerIndex + total - 1) % total,
-        centerIndex,
-        (centerIndex + 1) % total,
-        (centerIndex + 2) % total,
-      ];
-
-      if (!container.children.length) {
-        // First build
-        order.forEach((imgIndex, posIndex) => {
-          const pos = modalPositions[posIndex];
-          const img = document.createElement('img');
-          img.src = mealImgs[imgIndex];
-          img.className = 'fan-img';
-          img.style.cssText = `
-            position:absolute;
-            height:86%;width:auto;max-width:34vw;
-            object-fit:contain;
-            border-radius:20px;
-            box-shadow:0 24px 60px rgba(0,0,0,0.8);
-            transform:translateX(${pos.tx}) scale(${pos.scale});
-            opacity:${pos.opacity};
-            z-index:${pos.z};
-            cursor:${posIndex !== 2 ? 'pointer' : 'default'};
-          `;
-          if (posIndex !== 2) {
-            const idx = imgIndex;
-            img.addEventListener('click', () => setFanCenter(idx));
-          }
-          container.appendChild(img);
-        });
-      } else {
-        // Store current transforms before update
-        const slots = Array.from(container.children);
-
-        slots.forEach((img, posIndex) => {
-          const pos = modalPositions[posIndex];
-          const newIdx = order[posIndex];
-
-          // Set new src
-          img.src = mealImgs[newIdx];
-          img.cursor = posIndex !== 2 ? 'pointer' : 'default';
-          img.onclick = posIndex !== 2 ? (() => { const idx = newIdx; return () => setFanCenter(idx); })() : null;
-
-          // Animate to new position
-          img.style.transition = 'transform 0.55s cubic-bezier(0.25,0.8,0.25,1), opacity 0.55s ease, z-index 0s 0.27s';
-          img.style.transform  = `translateX(${pos.tx}) scale(${pos.scale})`;
-          img.style.opacity    = String(pos.opacity);
-          img.style.zIndex     = String(pos.z);
-        });
-      }
-
-      // Update dots
-      const dotsEl = document.getElementById('carouselDots');
-      if (dotsEl) {
-        dotsEl.innerHTML = '';
-        mealImgs.forEach((_, i) => {
-          const d = document.createElement('span');
-          d.className = 'carousel-dot' + (i === centerIndex ? ' active' : '');
-          d.onclick = () => setFanCenter(i);
-          dotsEl.appendChild(d);
-        });
-      }
-    }
-
-    function setFanCenter(index) {
-      mealCurrent = index;
-      buildFan(mealCurrent, true);
-    }
-
-    function openCarousel(index) {
-      mealCurrent = index;
-      const container = document.getElementById('fanModal');
-      container.innerHTML = '';
-      buildFan(mealCurrent, false);
-      document.getElementById('carouselModal').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeCarousel() {
-      document.getElementById('carouselModal').style.display = 'none';
-      document.body.style.overflow = '';
-    }
-
-    document.getElementById('mealGallery').addEventListener('click', () => openCarousel(0));
-
-    document.getElementById('carouselModal').addEventListener('click', function(e) {
-      if (e.target === this) closeCarousel();
-    });
-
-    document.addEventListener('keydown', e => {
-      if (document.getElementById('carouselModal').style.display === 'flex') {
-        if (e.key === 'ArrowRight') setFanCenter((mealCurrent + 1) % mealImgs.length);
-        if (e.key === 'ArrowLeft')  setFanCenter((mealCurrent + mealImgs.length - 1) % mealImgs.length);
-        if (e.key === 'Escape')     closeCarousel();
-      }
     });
   </script>
 
