@@ -15,6 +15,22 @@
   <link rel="stylesheet" href="../assets/css/components.css">
   <link rel="stylesheet" href="../assets/css/page-hero.css">
   <link rel="stylesheet" href="./portfolio.css">
+  <style>
+    .video-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 8px 20px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: all 0.2s;
+    }
+    .video-btn:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+    .video-btn.active { background: rgba(20,184,166,0.15); color: #14B8A6; border-color: rgba(20,184,166,0.4); }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
@@ -74,7 +90,6 @@
       <div class="portfolio-section__inner">
         <div class="portfolio-section__eyebrow">Dashboards</div>
         <h2 class="portfolio-section__title">Data visualisation &amp; reporting</h2>
-
         <div class="portfolio-grid">
 
           <!-- Vaultic — real -->
@@ -94,12 +109,7 @@
             </div>
             <div class="demo-card__footer">
               <div>
-                <a href="https://leclueleach.github.io/vaultic/"
-                   class="demo-card__launch launch-demo"
-                   data-demo="vaultic"
-                   data-url="https://leclueleach.github.io/vaultic/">
-                  Launch Demo ↗
-                </a>
+                <a href="https://leclueleach.github.io/vaultic/" class="demo-card__launch launch-demo" data-demo="vaultic" data-url="https://leclueleach.github.io/vaultic/">Launch Demo ↗</a>
                 <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.25);margin-top:6px;font-style:italic;">Best experienced on a larger screen.</p>
               </div>
             </div>
@@ -138,7 +148,6 @@
       <div class="portfolio-section__inner">
         <div class="portfolio-section__eyebrow rust">Automation</div>
         <h2 class="portfolio-section__title">Workflows &amp; pipelines</h2>
-
         <div class="portfolio-grid">
 
           <!-- LC Project Progress — real -->
@@ -152,7 +161,7 @@
               </div>
             </div>
             <div class="demo-card__body">
-              <div class="demo-card__category">Workflow · Google Sheets & Apps Script</div>
+              <div class="demo-card__category">Workflow · Google Sheets &amp; Apps Script</div>
               <h3 class="demo-card__title">LC Project Progress Tracker</h3>
               <p class="demo-card__desc">A project tracking system built for a small business to manage and assign work across internal staff and freelancers. Automated tab creation keeps everything structured, a webapp dashboard gives management real-time oversight, and the whole system is designed to reduce admin time and minimise human error across multiple teams.</p>
               <div class="demo-card__tags">
@@ -170,7 +179,7 @@
             </div>
           </div>
 
-          <!-- Video Player Modal -->
+          <!-- LC Project Progress Video Modal -->
           <div id="videoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
             <div style="position:relative;width:90vw;max-width:900px;">
               <button onclick="closeVideoPlayer()" style="position:absolute;top:-40px;right:0;background:none;border:none;color:rgba(255,255,255,0.6);font-size:28px;cursor:pointer;line-height:1;">&times;</button>
@@ -186,11 +195,37 @@
             </div>
           </div>
 
+          <!-- Placeholder — Billing Automation -->
           <div class="demo-card demo-card--placeholder">
             <div class="demo-card__thumb">
               <div class="demo-card__thumb-placeholder">
-                <div class="demo-card__thumb-icon">🎫</div>
+                <div class="demo-card__thumb-icon">⚙️</div>
                 <div class="demo-card__thumb-label">Coming soon</div>
+              </div>
+            </div>
+            <div class="demo-card__body">
+              <div class="demo-card__category">Finance · Google Apps Script</div>
+              <h3 class="demo-card__title">Billing Automation Pipeline</h3>
+              <p class="demo-card__desc">Automated billing workflow using Google Sheets and Apps Script — dynamic sheet targeting, formatted HTML emails, and Supabase logging.</p>
+              <div class="demo-card__tags">
+                <span class="p-tag p-tag--rust">Automation</span>
+                <span class="p-tag">Apps Script</span>
+                <span class="p-tag">Google Sheets</span>
+              </div>
+            </div>
+            <div class="demo-card__footer">
+              <span class="demo-card__status demo-card__status--progress">In progress</span>
+            </div>
+          </div>
+
+          <!-- Mass Ticket Generator — real -->
+          <div class="demo-card">
+            <div class="demo-card__thumb" style="cursor:pointer;" onclick="openTicketPlayer()">
+              <img src="../assets/img/Mass_Ticket_Generator_Thumb.png" alt="Mass Ticket Generator" loading="lazy">
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.35);">
+                <div style="width:52px;height:52px;border-radius:50%;background:rgba(249,115,22,0.9);display:flex;align-items:center;justify-content:center;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#fff"><polygon points="5,3 19,12 5,21"/></svg>
+                </div>
               </div>
             </div>
             <div class="demo-card__body">
@@ -201,10 +236,24 @@
                 <span class="p-tag p-tag--rust">Automation</span>
                 <span class="p-tag">Jira</span>
                 <span class="p-tag">Apps Script</span>
+                <span class="p-tag">Google Sheets</span>
               </div>
             </div>
             <div class="demo-card__footer">
-              <span class="demo-card__status">Planned</span>
+              <div>
+                <button class="demo-card__launch" onclick="openTicketPlayer()">Watch Demo ▶</button>
+                <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.25);margin-top:6px;font-style:italic;">Built at EDGE Education</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mass Ticket Generator Video Modal -->
+          <div id="ticketModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+            <div style="position:relative;width:90vw;max-width:900px;">
+              <button onclick="closeTicketPlayer()" style="position:absolute;top:-40px;right:0;background:none;border:none;color:rgba(255,255,255,0.6);font-size:28px;cursor:pointer;line-height:1;">&times;</button>
+              <video id="ticketVideo" controls style="width:100%;border-radius:12px;background:#000;" preload="metadata">
+                <source src="../assets/videos/Mass_Ticket_Generator_Video_1.mp4" type="video/mp4">
+              </video>
             </div>
           </div>
 
@@ -241,7 +290,6 @@
       <div class="portfolio-section__inner">
         <div class="portfolio-section__eyebrow" style="color:#a78bfa;">Personal Projects</div>
         <h2 class="portfolio-section__title">Built for myself — then kept going</h2>
-
         <div class="portfolio-grid">
 
           <!-- Meal Planner -->
@@ -263,13 +311,7 @@
             </div>
             <div class="demo-card__footer">
               <div>
-                <a href="https://leclueleach.github.io/meal-planner-demo/"
-                   class="demo-card__launch launch-demo"
-                   data-demo="meal-planner"
-                   data-url="https://leclueleach.github.io/meal-planner-demo/"
-                   target="_blank" rel="noopener noreferrer">
-                  Launch Demo ↗
-                </a>
+                <a href="https://leclueleach.github.io/meal-planner-demo/" class="demo-card__launch launch-demo" data-demo="meal-planner" data-url="https://leclueleach.github.io/meal-planner-demo/" target="_blank" rel="noopener noreferrer">Launch Demo ↗</a>
                 <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(255,255,255,0.25);margin-top:6px;font-style:italic;">Personal project · Live</p>
               </div>
             </div>
@@ -278,18 +320,11 @@
         </div>
       </div>
     </div>
+
     <footer class="portfolio-footer" role="contentinfo">
       <div class="portfolio-footer__copy">
         &copy; <span id="year"></span> <span>Le Clue Leach</span> — Built from an idea.
       </div>
-      <!-- <nav aria-label="Footer navigation">
-        <ul class="portfolio-footer__links">
-          <li><a href="../index.html"   class="portfolio-footer__link">Home</a></li>
-          <li><a href="./about.html"   class="portfolio-footer__link">About</a></li>
-          <li><a href="./cv.html"      class="portfolio-footer__link">CV</a></li>
-          <li><a href="./contact.html" class="portfolio-footer__link">Contact</a></li>
-        </ul>
-      </nav> -->
     </footer>
 
   </div>
@@ -339,10 +374,9 @@
         }
       });
     }, { threshold: 0.1 });
-
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // Fallback — make all reveal elements visible after 1s if observer hasn't fired
+    // Fallback — make all reveal elements visible after 1s
     setTimeout(() => {
       document.querySelectorAll('.reveal:not(.visible)').forEach(el => el.classList.add('visible'));
     }, 1000);
@@ -350,47 +384,17 @@
     /* ── HAMBURGER MENU ─────────────────────────────────── */
     const hamburger = document.querySelector('.nav__hamburger');
     const overlay   = document.querySelector('.nav__overlay');
-
     if (hamburger && overlay) {
-      function openMenu() {
-        hamburger.classList.add('open');
-        overlay.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      }
-      function closeMenu() {
-        hamburger.classList.remove('open');
-        overlay.classList.remove('open');
-        document.body.style.overflow = '';
-      }
-      hamburger.addEventListener('click', () => {
-        hamburger.classList.contains('open') ? closeMenu() : openMenu();
-      });
+      function openMenu() { hamburger.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+      function closeMenu() { hamburger.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
+      hamburger.addEventListener('click', () => hamburger.classList.contains('open') ? closeMenu() : openMenu());
       overlay.querySelectorAll('.nav__overlay-link').forEach(l => l.addEventListener('click', closeMenu));
       const closeBtn = overlay.querySelector('.nav__overlay-close');
       if (closeBtn) closeBtn.addEventListener('click', closeMenu);
-      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
     }
-  </script>
 
-  <style>
-    .video-btn {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      padding: 8px 20px;
-      border-radius: 6px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: transparent;
-      color: rgba(255,255,255,0.5);
-      cursor: pointer;
-      letter-spacing: 0.08em;
-      transition: all 0.2s;
-    }
-    .video-btn:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
-    .video-btn.active { background: rgba(20,184,166,0.15); color: #14B8A6; border-color: rgba(20,184,166,0.4); }
-  </style>
-
-  <script>
-    const videos = [
+    /* ── VIDEO PLAYERS ───────────────────────────────────── */
+    const lcVideos = [
       '../assets/videos/LC_Project_Progress_Video_1.webm',
       '../assets/videos/LC_Project_Progress_Video_2.webm',
       '../assets/videos/LC_Project_Progress_Video_3.webm',
@@ -398,30 +402,39 @@
     ];
 
     function openVideoPlayer() {
-      const modal = document.getElementById('videoModal');
-      modal.style.display = 'flex';
+      document.getElementById('videoModal').style.display = 'flex';
       document.body.style.overflow = 'hidden';
       document.getElementById('demoVideo').play();
     }
-
     function closeVideoPlayer() {
-      const modal = document.getElementById('videoModal');
-      modal.style.display = 'none';
+      document.getElementById('videoModal').style.display = 'none';
       document.body.style.overflow = '';
       document.getElementById('demoVideo').pause();
     }
-
     function switchVideo(index, btn) {
       const video = document.getElementById('demoVideo');
-      video.src = videos[index];
+      video.src = lcVideos[index];
       video.load();
       video.play();
       document.querySelectorAll('.video-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     }
+    document.getElementById('videoModal').addEventListener('click', function(e) { if (e.target === this) closeVideoPlayer(); });
 
-    document.getElementById('videoModal').addEventListener('click', function(e) {
-      if (e.target === this) closeVideoPlayer();
+    function openTicketPlayer() {
+      document.getElementById('ticketModal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      document.getElementById('ticketVideo').play();
+    }
+    function closeTicketPlayer() {
+      document.getElementById('ticketModal').style.display = 'none';
+      document.body.style.overflow = '';
+      document.getElementById('ticketVideo').pause();
+    }
+    document.getElementById('ticketModal').addEventListener('click', function(e) { if (e.target === this) closeTicketPlayer(); });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeVideoPlayer(); closeTicketPlayer(); }
     });
   </script>
 
